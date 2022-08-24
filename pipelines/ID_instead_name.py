@@ -3,31 +3,40 @@ import pandas as pd
 import requests
 import json
 
-url=f"https://timetable.api.test.profcomff.com"
+url = f"https://timetable.api.test.profcomff.com"
 
 # Авторизация
 beaver = requests.post(f"{url}/token", {"username": "admin", "password": "42"})
 
 # Парсинг ответа
-auth_data=json.loads(beaver.content)
+auth_data = json.loads(beaver.content)
+
 
 def get_teachers():
-    a = requests.get(f'https://timetable.api.test.profcomff.com/timetable/lecturer/?limit=1000&offset=0', headers={"Authorization": f"Bearer {auth_data.get('access_token')}"})
+    a = requests.get(f'https://timetable.api.test.profcomff.com/timetable/lecturer/?limit=1000&offset=0',
+                     headers={"Authorization": f"Bearer {auth_data.get('access_token')}"})
     b = json.dumps(a.json())
     jteachers = json.loads(b)
     teachers = pd.DataFrame(jteachers['items'])
-    print(teachers)
+    #print(teachers)
     return teachers
 
-def to_id():
+
+def to_id(lessons):
     teachers = get_teachers()
-    b = pd.read_excel('parsed_lessons_table (3).xlsx')
-    for i in range(len(b)):
-        for j in range(len(a)):
-            if(str(b.loc[i, 'teacher']).__contains__(str(a.loc[j, 'Фамилия И. О.']))):
-                b.loc[i, 'teacher'] = str(a.loc[j, 'id'])
-    return b
+    print(lessons)
+    print(teachers)
+    for i in range(len(lessons)):
+        for j in range(len(teachers)):
+            #if isinstance(lessons[i, 'teacher'], list):
+                name = str(teachers.loc[j, 'last_name']) + " " + str((teachers.loc[j, 'first_name'])[0]) + "." + " " + str(teachers.loc[j, 'middle_name'][0]) + ".";
+                print(str(teachers.loc[j, 'last_name']))
+                if str(lessons.loc[i, 'teacher']).__contains__(name):
+                    lessons.loc[i, 'teacher'] = teachers.loc[j, 'id']
+                    break
+    return lessons
 
-a = to_id()
 
-get_teachers()
+# a = to_id()
+#
+# get_teachers()
