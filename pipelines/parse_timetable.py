@@ -1,10 +1,7 @@
-import hashlib
-
 import pandas as pd
 import requests
 
 import timetable.timetable_parser as parser
-
 
 # [[курс, поток, количество групп], ...]
 sources = [
@@ -32,6 +29,6 @@ def parse_timetable():
             html = requests.get('http://ras.phys.msu.ru/table/{year}/{stream}/{group}.htm'
                                 .format(year=source[0], stream=source[1], group=group), headers=HEADERS).text
             results = pd.concat([results, pd.DataFrame(parser.run(html))])
-    results["id"] = results.apply(lambda x: hashlib.md5("".join([i.__str__() for i in x]).encode()).hexdigest(), axis=1)
+    # results["id"] = results.apply(lambda x: hashlib.md5("".join([i.__str__() for i in x]).encode()).hexdigest(), axis=1)
 
     return results

@@ -5,7 +5,7 @@ import pandas as pd
 
 def parse_name(lessons):
     """
-    Разделяет колонку 'name' на 'subject', 'reacher' и 'place'.
+    Разделяет колонку 'name' на 'subject', 'teacher' и 'place'.
     """
     # Регулярки запускаются по порядку до тех пор, пока не получится не null.
     decode_patterns = [
