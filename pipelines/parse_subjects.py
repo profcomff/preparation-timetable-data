@@ -1,7 +1,5 @@
 import re
 
-import pandas as pd
-
 
 def parse_subjects(lessons):
     """
@@ -34,7 +32,8 @@ def parse_subjects(lessons):
                 continue
 
         # 307, 302, 306 - S
-        result = re.match("(\d+[А-Яа-яёЁ]*)[, +]*(\d+[А-Яа-яёЁ]*)[, +]*(\d+[А-Яа-яёЁ]*) - ([А-Яа-яёЁA-Z \./]+)", subject)
+        result = re.match("(\d+[А-Яа-яёЁ]*)[, +]*(\d+[А-Яа-яёЁ]*)[, +]*(\d+[А-Яа-яёЁ]*) - ([А-Яа-яёЁA-Z \./]+)",
+                          subject)
         if not (result is None):
             if subject == result[0]:
                 if row["group"] != result[1] and row["group"] != result[2] and row["group"] != result[3]:
@@ -101,20 +100,21 @@ def parse_subjects(lessons):
 
     lessons.drop(deleted_rows, axis=0, inplace=True)
     lessons["subject"] = subjects
+    lessons = lessons.reset_index()
 
+    # Уборка некоторого мусора.
     teachers = []
     subjects = []
     for index, row in lessons.iterrows():
         if "Специальный физический практикум" in row["subject"]:
             result = "".join(re.findall("[А-Яа-яёЁ]+ [А-Яа-яёЁ]{1}\. [А-Яа-яёЁ]{1}\.", row["subject"]))
             if result:
-                subjects.append("Специальный физический практикум" )
+                subjects.append("Специальный физический практикум")
                 teachers.append("".join(re.findall("[А-Яа-яёЁ]+ [А-Яа-яёЁ]{1}\. [А-Яа-яёЁ]{1}\.", row["subject"])))
                 continue
 
         teachers.append(row["teacher"])
         subjects.append(row["subject"])
-
 
     lessons["teacher"] = teachers
     lessons["subject"] = subjects
