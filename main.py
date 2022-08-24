@@ -1,13 +1,14 @@
-from pipelines.parse_group import parse_group
-from pipelines.parse_name import parse_name
-from pipelines.parse_teacher import parse_teacher
-from pipelines.parse_timetable import parse_timetable
 import pandas as pd
 
+from pipelines.parse_group import parse_group
+from pipelines.parse_place import parse_place
+from pipelines.parse_teacher import parse_teacher
+
 # lessons = parse_timetable()
-lessons = pd.read_excel("parsed_lessons_table.xlsx", sheet_name=0)
 # lessons = parse_name(lessons)
+lessons = pd.read_excel("parsed_lessons_table.xlsx", sheet_name=0)
 
 lessons, teachers = parse_teacher(lessons)
 lessons, groups = parse_group(lessons)
-print(lessons)
+lessons, places = parse_place(lessons)
+print(places)
