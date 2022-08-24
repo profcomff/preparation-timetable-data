@@ -8,9 +8,14 @@ from pipelines.parse_teacher import parse_teacher
 # lessons = parse_timetable()
 # lessons = parse_name(lessons)
 lessons = pd.read_excel("parsed_lessons_table.xlsx", sheet_name=0)
+lessons = lessons.drop(columns=["id"])
 
-lessons, teachers = parse_teacher(lessons)
-lessons, groups = parse_group(lessons)
 lessons, places = parse_place(lessons)
+lessons, groups = parse_group(lessons)
 lessons, subjects = parse_subjects(lessons)
-print(places)
+lessons, teachers = parse_teacher(lessons)
+
+with open("lessons.xlsx", "wb") as f:
+    writer = pd.ExcelWriter(f, engine="xlsxwriter")
+    lessons.to_excel(writer, index=False)
+    writer.save()

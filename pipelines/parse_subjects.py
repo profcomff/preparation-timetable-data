@@ -1,39 +1,122 @@
+import re
+
+import pandas as pd
+
+
 def parse_subjects(lessons):
     """
-    Делает так, чтобы в одной строчке была написана пара только для одной группы.
-    Дополнительно возвращает список групп вида: [{'name': name, 'number': number}, ]
+    Парсит колонку 'subject' и, если надо, удаляет строчку из таблицы (если в названии предметы указаны группы).
+    Дополнительно возвращает список предметов.
     """
-    # Регулярки запускаются по порядку до тех пор, пока не получится не null.
-    decode_patterns = [
-        "(\d+[А-Яа-яёЁ]*) *- *([А-Яа-яёЁ \.]+)",
-        "(\d+)()"
-    ]
-
-    groups = []
-    new_rows = []
-    unique_groups = set()
+    subjects = []
+    deleted_rows = []
     for index, row in lessons.iterrows():
-        group = row["group"]
+        subject = row["subject"]
 
-        if pd.isna(group):
-            continue
-
-        for regex in decode_patterns:
-            results = re.findall(regex, group)
-            if not results:
+        # 307 - S
+        result = re.match("(\d+[А-Яа-яёЁ]*) - ([А-Яа-яёЁA-Z \./]+)", subject)
+        if not (result is None):
+            if subject == result[0]:
+                if row["group"] != result[1]:
+                    deleted_rows.append(index)
+                else:
+                    subjects.append(result[2])
                 continue
-            else:
-                group = results
-                break
 
-        unique_groups.update(set(group))
+        # 307, 302 - S
+        result = re.match("(\d+[А-Яа-яёЁ]*)[, +]*(\d+[А-Яа-яёЁ]*) - ([А-Яа-яёЁA-Z \./]+)", subject)
+        if not (result is None):
+            if subject == result[0]:
+                if row["group"] != result[1] and row["group"] != result[2]:
+                    deleted_rows.append(index)
+                else:
+                    subjects.append(result[3])
+                continue
 
-        groups.append(group[0][0])
-        if len(group) > 1:
-            for i in range(1, len(group)):
-                groups.append(group[i][0])
-                new_rows.append(row)
+        # 307, 302, 306 - S
+        result = re.match("(\d+[А-Яа-яёЁ]*)[, +]*(\d+[А-Яа-яёЁ]*)[, +]*(\d+[А-Яа-яёЁ]*) - ([А-Яа-яёЁA-Z \./]+)", subject)
+        if not (result is None):
+            if subject == result[0]:
+                if row["group"] != result[1] and row["group"] != result[2] and row["group"] != result[3]:
+                    deleted_rows.append(index)
+                else:
+                    subjects.append(result[4])
+                continue
 
-    lessons = pd.concat([lessons, pd.DataFrame(new_rows)])
-    lessons["group"] = groups
-    return lessons, list(unique_groups)
+        # 307 - S, 302 - S
+        result = re.match("(\d+[А-Яа-яёЁ]*) - ([А-Яа-яёЁ \./]+), (\d+[А-Яа-яёЁ]*) - ([А-Яа-яёЁA-Z \./]+)", subject)
+        if not (result is None):
+            if subject == result[0]:
+                if row["group"] == result[1]:
+                    subjects.append(result[2])
+                elif row["group"] == result[3]:
+                    subjects.append(result[4])
+                else:
+                    deleted_rows.append(index)
+                continue
+
+        # 307 S, 302 S
+        result = re.match("(\d+[А-Яа-яёЁ]*) ([А-Яа-яёЁ \./]+), (\d+[А-Яа-яёЁ]*) ([А-Яа-яёЁA-Z \./]+)", subject)
+        if not (result is None):
+            if subject == result[0]:
+                if row["group"] == result[1]:
+                    subjects.append(result[2])
+                elif row["group"] == result[3]:
+                    subjects.append(result[4])
+                else:
+                    deleted_rows.append(index)
+                continue
+
+        # 1 поток без 307 группы - S
+        result = re.match("1 поток без 307 группы - ([А-Яа-яёЁA-Z \./]+)", subject)
+        if not (result is None):
+            if subject == result[0]:
+                if row["group"] == "307":
+                    deleted_rows.append(index)
+                else:
+                    subjects.append(result[1])
+                continue
+
+        # 1 поток без 307 группы и астр. - S
+        result = re.match("1 поток без 307 группы и астр. - ([А-Яа-яёЁA-Z \./]+)", subject)
+        if not (result is None):
+            if subject == result[0]:
+                if row["group"] == "307" or row["group"] == "301":
+                    deleted_rows.append(index)
+                else:
+                    subjects.append(result[1])
+                continue
+
+        # 306
+        result = re.match("(\d+[А-Яа-яёЁ]*) *", subject)
+        if not (result is None):
+            if subject == result[0]:
+                if row["group"] != result[1]:
+                    deleted_rows.append(index)
+                else:
+                    subjects.append(result[1])
+                continue
+
+        subjects.append(subject)
+
+    lessons.drop(deleted_rows, axis=0, inplace=True)
+    lessons["subject"] = subjects
+
+    teachers = []
+    subjects = []
+    for index, row in lessons.iterrows():
+        if "Специальный физический практикум" in row["subject"]:
+            result = "".join(re.findall("[А-Яа-яёЁ]+ [А-Яа-яёЁ]{1}\. [А-Яа-яёЁ]{1}\.", row["subject"]))
+            if result:
+                subjects.append("Специальный физический практикум" )
+                teachers.append("".join(re.findall("[А-Яа-яёЁ]+ [А-Яа-яёЁ]{1}\. [А-Яа-яёЁ]{1}\.", row["subject"])))
+                continue
+
+        teachers.append(row["teacher"])
+        subjects.append(row["subject"])
+
+
+    lessons["teacher"] = teachers
+    lessons["subject"] = subjects
+
+    return lessons, list(set(lessons["subject"].tolist()))

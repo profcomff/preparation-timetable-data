@@ -14,7 +14,7 @@ def parse_group(lessons):
         "(\d+)()"
     ]
 
-    groups = []
+    groups = ["" for _ in range(len(lessons.index))]
     new_rows = []
     unique_groups = set()
     for index, row in lessons.iterrows():
@@ -33,12 +33,12 @@ def parse_group(lessons):
 
         unique_groups.update(set(group))
 
-        groups.append(group[0][0])
+        groups[index] = group[0][0]
         if len(group) > 1:
             for i in range(1, len(group)):
                 groups.append(group[i][0])
                 new_rows.append(row)
 
-    lessons = pd.concat([lessons, pd.DataFrame(new_rows)])
+    lessons = pd.concat([lessons, pd.DataFrame(new_rows)], ignore_index=True)
     lessons["group"] = groups
     return lessons, list(unique_groups)
