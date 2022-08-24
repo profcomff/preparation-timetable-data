@@ -5,16 +5,18 @@ import pandas as pd
 
 def parse_group(lessons):
     """
-    Делает так, чтобы в одной строчке была написана пара только для одной группы.
+    Парсит колонку 'group' и, если надо, добавляет допольнительные строчки в таблицу.
     Дополнительно возвращает список групп вида: [{'name': name, 'number': number}, ]
     """
     # Регулярки запускаются по порядку до тех пор, пока не получится не null.
     decode_patterns = [
-        "(?P<subject>[А-Яа-яёЁa-zA-Z \+,/\.\-0-9]+)<nobr>(?P<place>[А-Яа-яёЁa-zA-Z\+,/\.\-0-9]+)</nobr>(?P<teacher>[А-Яа-яёЁa-zA-Z \+,/\.\-0-9]+)",
-        "(?P<subject>[А-Яа-яёЁ (:).\-0-9]+)"
+        "(\d+[А-Яа-яёЁ]*) *- *([А-Яа-яёЁ \.]+)",
+        "(\d+)()"
     ]
 
-    unique_group = set()
+    groups = ["" for _ in range(len(lessons.index))]
+    new_rows = []
+    unique_groups = set()
     for index, row in lessons.iterrows():
         group = row["group"]
 
@@ -22,13 +24,21 @@ def parse_group(lessons):
             continue
 
         for regex in decode_patterns:
-            results = re.match(regex, group)
-            if results is None:
+            results = re.findall(regex, group)
+            if not results:
                 continue
             else:
-                parsed_name = results.groupdict()
+                group = results
                 break
 
-        lessons[index, "group"] = group
+        unique_groups.update(set(group))
 
-    return lessons, list(unique_group)
+        groups[index] = group[0][0]
+        if len(group) > 1:
+            for i in range(1, len(group)):
+                groups.append(group[i][0])
+                new_rows.append(row)
+
+    lessons = pd.concat([lessons, pd.DataFrame(new_rows)], ignore_index=True)
+    lessons["group"] = groups
+    return lessons, list(unique_groups)
