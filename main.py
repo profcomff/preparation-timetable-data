@@ -27,5 +27,4 @@ completion_groups(groups)
 
 lessons = to_id(lessons)
 new_lessons = calc_date(lessons)
-new_lessons.to_excel("Check.xlsx", "Check_list")
 add_lessons(new_lessons)
