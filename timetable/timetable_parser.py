@@ -26,37 +26,50 @@ class Group:
     def get_lessons(self) -> List[Dict[str, Any]]:
         """Список предметов."""
         lessons: List[Dict[str, Any]] = []
-        weekday = 0
-        lesson_num = 1
 
-        for tag in self.tags[2:-1]:
+        # Разделяем self.tag по дням.
+        tags_day: List[List[BS]] = []
+        temp_day: List[BS] = []
+        for tag in self.tags[3:-1]:
+            # Новый день.
             if len(tag.select("td.delimiter")) != 0:
-                # Парсим разрывы дней
-                lesson_num = 1
-                weekday += 1
+                tags_day.append(temp_day)
+                temp_day = []
                 continue
+            temp_day.append(tag)
 
-            # Иногда возвращается несколько пар.
-            results = Lesson(tag).run()
-            for lesson in results:
-                lesson['weekday'] = weekday
-                lesson['num'] = lesson_num
+        # Разделяем self.tag по номер пары.
+        tags_num: List[List[List[BS]]] = []
+        temp_day: List[List[BS]] = []
+        temp_num: List[BS] = []
+        for tags in tags_day:
+            for tag in tags:
+                if len(tag.select("td.tdtime")) != 0:
+                    if temp_num:
+                        temp_day.append(temp_num)
+                        temp_num = []
+                temp_num.append(tag)
+            tags_num.append(temp_day)
+            temp_day = []
+            temp_num = []
 
-                if len(lessons) != 0:
-                    lesson['start'] = lesson.get('start') or lessons[-1]['start']
-                    lesson['end'] = lesson.get('end') or lessons[-1]['end']
-                else:
-                    lesson['start'] = lesson.get('start') or "9:00"
-                    lesson['end'] = lesson.get('end') or "10:35"
 
-                if lesson["addition"]:
-                    lesson_num += 1
-                lesson.pop("addition")
+        num2start_end = {0: ("9:00", "10:35"), 1: ("10:50", "12:25"), 2: ("13:30", "15:05"), 3: ("15:20", "16:55"),
+                         4: ("17:05", "18:40"), 5: ("18:55", "20:30")}
+        for weekday, tags_day in enumerate(tags_num):
+            for lesson_num, tags_lessons in enumerate(tags_day):
+                for tag in tags_lessons:
+                    results = Lesson(tag).run()
+                    for lesson in results:
+                        lesson["weekday"] = weekday
+                        lesson["num"] = lesson_num
 
-                lesson['name'] = lesson['name'].replace("\xa0", " ")
-                if lesson["name"] != " ":
-                    lessons.append(lesson)
+                        lesson["start"] = num2start_end[lesson_num][0]
+                        lesson["end"] = num2start_end[lesson_num][1]
 
+                        lesson['name'] = lesson['name'].replace("\xa0", " ")
+                        if lesson['name'] != " ":
+                            lessons.append(lesson)
         return lessons
 
 
@@ -104,38 +117,30 @@ class Lesson:
 
     def _get_item1(self):
         html = self.html.select("td.tditem1")[0]
-        time = self.html.select("td.tdtime")[0].contents
-        return [{"name": "".join(str(tag) for tag in html.contents), "start": time[0], "end": time[-1],
-                 "odd": True, "even": True, "addition": True}]
+        return [{"name": "".join(str(tag) for tag in html.contents), "odd": True, "even": True}]
 
     def _get_small1_with_time(self):
         html = self.html.select("td.tdsmall1")[0]
-        time = self.html.select("td.tdtime")[0].contents
-        return [{"name": "".join(str(tag) for tag in html.contents), "start": time[0], "end": time[-1],
-                "odd": True, "even": False, "addition": False}]
+        return [{"name": "".join(str(tag) for tag in html.contents), "odd": True, "even": False}]
 
     def _get_small1_without_time(self):
         html = self.html.select("td.tdsmall1")[0]
-        return [{"name": "".join(str(tag) for tag in html.contents), "odd": False, "even": True, "addition": True}]
+        return [{"name": "".join(str(tag) for tag in html.contents), "odd": False, "even": True}]
 
     def _get_item1_with_small0(self):
-        time = self.html.select("td.tdtime")[0].contents
         tags = self.html.select("td.tdsmall0")
 
         results = []
         for index, html in enumerate(tags):
-            results.append({"name": "".join(str(tag) for tag in html.contents), "start": time[0], "end": time[-1],
-                            "odd": True, "even": True, "addition": index+1 == len(tags)})
+            results.append({"name": "".join(str(tag) for tag in html.contents), "odd": True, "even": True})
         return results
 
     def _get_small1_with_small0_with_time(self):
-        time = self.html.select("td.tdtime")[0].contents
         tags = self.html.select("td.tdsmall0")
 
         results = []
         for index, html in enumerate(tags):
-            results.append({"name": "".join(str(tag) for tag in html.contents), "start": time[0], "end": time[-1],
-                            "odd": True, "even": False, "addition": index+1 == len(tags)})
+            results.append({"name": "".join(str(tag) for tag in html.contents), "odd": True, "even": False})
         return results
 
     def _get_small1_with_small0_without_time(self):
@@ -143,8 +148,7 @@ class Lesson:
 
         results = []
         for index, html in enumerate(tags):
-            results.append({"name": "".join(str(tag) for tag in html.contents),
-                            "odd": False, "even": True, "addition": index+1 == len(tags)})
+            results.append({"name": "".join(str(tag) for tag in html.contents), "odd": False, "even": True})
         return results
 
 
