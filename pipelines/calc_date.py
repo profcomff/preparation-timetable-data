@@ -1,39 +1,37 @@
 import pandas as pd
-import datetime
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 
 def calc_date(lessons):
-    #print(lessons)
     semester_begin = "09/01/2022"
     semester_end = "12/31/2022"
 
-    begin = datetime.datetime.strptime(semester_begin, "%m/%d/%Y")
-    end = datetime.datetime.strptime(semester_end, "%m/%d/%Y")
+    begin = datetime.strptime(semester_begin, "%m/%d/%Y")
+    end = datetime.strptime(semester_end, "%m/%d/%Y")
 
-    a = str(end - begin)
-    day_number = int(a.split()[0])
-
-    # day_number += begin.weekday()
-    # day_number += 7 - end.weekday()
-
+    day_number = (end-begin).days
     lessons_new = []
 
     for i in range(day_number):
-        num = int((i + begin.weekday() + 1)//7 + 1) % 2
+        num = ((i + begin.weekday() + 1)//7 + 1) % 2
         for j, row in lessons.iterrows():
             if (num == 1 and row['odd']) or (num == 0 and row['even']):
                 row_new = row
                 day = begin + timedelta(days=i)
-                if row['weekday'] - 1 == day.weekday():
-                    date = day.strftime('%m/%d/%Y') + ' ' + row['start']
-                    date1 = day.strftime('%m/%d/%Y') + ' ' + row['end']
-                    date_ = datetime.datetime.strptime(date, '%m/%d/%Y %H:%M')
-                    date1_ = datetime.datetime.strptime(date1, '%m/%d/%Y %H:%M')
-                    seconds = int(date_.timestamp())
-                    seconds1 = int(date1_.timestamp())
-                    row_new['start'] = str(seconds)
-                    row_new['end'] = str(seconds1)
+                if row['weekday'] == day.weekday():
+
+                    hours_start, minutes_start = row['start'].split(':')
+                    hours_end, minutes_end = row['end'].split(':')
+
+                    date_start = day + timedelta(hours=int(hours_start), minutes=int(minutes_start))
+                    date_end = day + timedelta(hours=int(hours_end), minutes=int(minutes_end))
+
+                    seconds_start = date_start.timestamp()
+                    seconds_end = date_end.timestamp()
+
+                    row_new['start'] = seconds_start
+                    row_new['end'] = seconds_end
+
                     lessons_new.append(row_new)
 
     lessons_new = pd.DataFrame(lessons_new)
@@ -42,6 +40,5 @@ def calc_date(lessons):
     lessons_new.pop('weekday')
     lessons_new.pop('num')
 
-    lessons_new.to_excel("foo.xlsx", sheet_name="Sheet1")
     return lessons_new
 
