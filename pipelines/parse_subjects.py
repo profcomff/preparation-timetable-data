@@ -67,10 +67,10 @@ def parse_subjects(lessons):
                 continue
 
         # 1 поток без 307 группы - S
-        result = re.match("1 поток без 307 группы - ([А-Яа-яёЁA-Z \./]+)", subject)
+        result = re.match("1 поток без [34].07 группы - ([А-Яа-яёЁA-Z \./]+)", subject)
         if not (result is None):
             if subject == result[0]:
-                if row["group"] == "307":
+                if row["group"] == "307" or row["group"] == "407":
                     deleted_rows.append(index)
                 else:
                     subjects.append(result[1])
@@ -80,7 +80,7 @@ def parse_subjects(lessons):
         result = re.match("1 поток без [34].07 группы,* *и астр. - ([А-Яа-яёЁA-Z \./]+)", subject)
         if not (result is None):
             if subject == result[0]:
-                if row["group"] == "307" or row["group"] == "301":
+                if row["group"] == "307" or row["group"] == "301" or row["group"] == "401":
                     deleted_rows.append(index)
                 else:
                     subjects.append(result[1])
