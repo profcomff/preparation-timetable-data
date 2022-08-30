@@ -77,7 +77,7 @@ def parse_subjects(lessons):
                 continue
 
         # 1 поток без 307 группы и астр. - S
-        result = re.match("1 поток без 307 группы,* *и астр. - ([А-Яа-яёЁA-Z \./]+)", subject)
+        result = re.match("1 поток без [34].07 группы,* *и астр. - ([А-Яа-яёЁA-Z \./]+)", subject)
         if not (result is None):
             if subject == result[0]:
                 if row["group"] == "307" or row["group"] == "301":
