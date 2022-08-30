@@ -41,7 +41,7 @@ def group_to_id(lessons):
 
 
 def teacher_to_id(lessons):
-    response = requests.get(f'https://timetable.api.test.profcomff.com/timetable/lecturer/?limit=1000&offset=0',
+    response = requests.get(f'https://timetable.api.test.profcomff.com/timetable/lecturer/?limit=1000&offset=0&details=description',
                             headers={"Authorization": f"Bearer {auth_data.get('access_token')}"})
     teachers = response.json()["items"]
 

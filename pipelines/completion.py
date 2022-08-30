@@ -9,10 +9,9 @@ auth_data = json.loads(beaver.content)
 
 
 def completion_lecturers(new_lecturers):
-    response = requests.get(f'https://timetable.api.test.profcomff.com/timetable/lecturer/?limit=1000&offset=0',
+    response = requests.get(f'https://timetable.api.test.profcomff.com/timetable/lecturer/?limit=1000&offset=0&details=description',
                             headers={"Authorization": f"Bearer {auth_data.get('access_token')}"})
     old_lecturers = response.json()["items"]
-
     new_lecturers = list(map(lambda x: x.split(), new_lecturers))
 
     b = False

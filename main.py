@@ -1,5 +1,7 @@
 import pandas as pd
 
+from pipelines.add_events import add_lessons
+from pipelines.calc_date import calc_date
 from pipelines.completion import completion_groups
 from pipelines.completion import completion_lecturers
 from pipelines.completion import completion_rooms
@@ -24,8 +26,5 @@ completion_rooms(places)
 completion_groups(groups)
 
 lessons = to_id(lessons)
-
-with open("lessons.xlsx", "wb") as f:
-    writer = pd.ExcelWriter(f, engine="xlsxwriter")
-    lessons.to_excel(writer, index=False)
-    writer.save()
+new_lessons = calc_date(lessons)
+add_lessons(new_lessons)
