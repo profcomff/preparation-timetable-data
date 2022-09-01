@@ -1,17 +1,22 @@
 import json
 import pandas as pd
 import requests
-import re
-import numpy as np
+from retrying import retry
 
-url = f"https://timetable.api.test.profcomff.com"
-beaver = requests.post(f"{url}/token", {"username": "admin", "password": "42"})
+from requests.exceptions import RequestException
+
+url = f"https://timetable.api.profcomff.com"
+beaver = requests.post(f"{url}/token", {"username": "timetable_fill", "password": "J2Jmc9mgn31jeSGa"})
+access_token = beaver.json().get("access_token")
+
 auth_data = json.loads(beaver.content)
 
-head = {"Authorization": f"Bearer {auth_data.get('access_token')}"}
-url_event = 'https://timetable.api.test.profcomff.com/timetable/event/'
+header = {"Authorization": f"Bearer {access_token}"}
+url_event = 'https://timetable.api.profcomff.com/timetable/event/'
 
 
+@retry(retry_on_exception=lambda e: isinstance(e, RequestException), wait_exponential_multiplier=1000,
+       wait_exponential_max=30000, stop_max_attempt_number=30)
 def add_lessons(lessons):
     for i, row in lessons.iterrows():
         name = row['subject']
@@ -28,7 +33,5 @@ def add_lessons(lessons):
             "start_ts": start,
             "end_ts": end
         }
-        requests.post('https://timetable.api.test.profcomff.com/timetable/event/', json=event, headers=head)
-
-
-
+        r = requests.post(url_event, json=event, headers=header)
+        print(r)

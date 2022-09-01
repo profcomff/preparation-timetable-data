@@ -3,14 +3,20 @@ import json
 import pandas as pd
 import requests
 
-url = f"https://timetable.api.test.profcomff.com"
-beaver = requests.post(f"{url}/token", {"username": "admin", "password": "42"})
+url = f"https://timetable.api.profcomff.com"
+beaver = requests.post(f"{url}/token", {"username": "timetable_fill", "password": "J2Jmc9mgn31jeSGa"})
+access_token = beaver.json().get("access_token")
+
 auth_data = json.loads(beaver.content)
 
+header = {"Authorization": f"Bearer {access_token}"}
+
+url_room = f'https://timetable.api.profcomff.com/timetable/room/?limit=1000&offset=0'
+url_group = f'https://timetable.api.profcomff.com/timetable/group/?limit=1000&offset=0'
+url_lecturer = f'https://timetable.api.profcomff.com/timetable/lecturer/?limit=1000&offset=0&details=description'
 
 def room_to_id(lessons):
-    response = requests.get(f'https://timetable.api.test.profcomff.com/timetable/room/?limit=1000&offset=0',
-                            headers={"Authorization": f"Bearer {auth_data.get('access_token')}"})
+    response = requests.get(url_room, headers=header)
     rooms = response.json()["items"]
 
     place = lessons["place"].tolist()
@@ -25,8 +31,7 @@ def room_to_id(lessons):
 
 
 def group_to_id(lessons):
-    response = requests.get(f'https://timetable.api.test.profcomff.com/timetable/group/?limit=1000&offset=0',
-                            headers={"Authorization": f"Bearer {auth_data.get('access_token')}"})
+    response = requests.get(url_group, headers=header)
     groups = response.json()["items"]
 
     new_groups = lessons["group"].tolist()
@@ -41,8 +46,7 @@ def group_to_id(lessons):
 
 
 def teacher_to_id(lessons):
-    response = requests.get(f'https://timetable.api.test.profcomff.com/timetable/lecturer/?limit=1000&offset=0&details=description',
-                            headers={"Authorization": f"Bearer {auth_data.get('access_token')}"})
+    response = requests.get(url_lecturer, headers=header)
     teachers = response.json()["items"]
 
     new_teacher = lessons["teacher"].tolist()

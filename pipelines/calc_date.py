@@ -1,10 +1,8 @@
 import pandas as pd
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, timezone
 
 
-def calc_date(lessons):
-    semester_begin = "09/01/2022"
-    semester_end = "12/31/2022"
+def calc_date(lessons, semester_begin, semester_end):
 
     begin = datetime.strptime(semester_begin, "%m/%d/%Y")
     end = datetime.strptime(semester_end, "%m/%d/%Y")
@@ -26,11 +24,11 @@ def calc_date(lessons):
                     date_start = day + timedelta(hours=int(hours_start), minutes=int(minutes_start))
                     date_end = day + timedelta(hours=int(hours_end), minutes=int(minutes_end))
 
-                    seconds_start = date_start.timestamp()
-                    seconds_end = date_end.timestamp()
+                    date_start_ = datetime.strftime(date_start, "%Y-%m-%dT%H:%M:%SZ")
+                    date_end_ = datetime.strftime(date_end, "%Y-%m-%dT%H:%M:%SZ")
 
-                    row_new['start'] = seconds_start
-                    row_new['end'] = seconds_end
+                    row_new['start'] = date_start_
+                    row_new['end'] = date_end_
 
                     lessons_new.append(row_new)
 
@@ -41,4 +39,3 @@ def calc_date(lessons):
     lessons_new.pop('num')
 
     return lessons_new
-

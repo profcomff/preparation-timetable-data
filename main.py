@@ -1,5 +1,3 @@
-import pandas as pd
-
 from pipelines.add_events import add_lessons
 from pipelines.calc_date import calc_date
 from pipelines.completion import completion_groups
@@ -21,10 +19,16 @@ lessons, groups = parse_group(lessons)
 lessons, subjects = parse_subjects(lessons)
 lessons, teachers = parse_teacher(lessons)
 
+
 completion_lecturers(teachers)
 completion_rooms(places)
 completion_groups(groups)
 
 lessons = to_id(lessons)
-new_lessons = calc_date(lessons)
+
+semester_begin = "09/01/2022"
+semester_end = "12/31/2022"
+
+new_lessons = calc_date(lessons, semester_begin, semester_end)
 add_lessons(new_lessons)
+
