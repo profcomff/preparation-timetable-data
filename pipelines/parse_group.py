@@ -3,17 +3,67 @@ import re
 import pandas as pd
 
 
+
+def _parse_group(group: str):
+    name_group = "[А-Яа-яёЁ \.,\-:]"
+    number_group = "\d+ {0,1}[А-Яа-яёЁ]*"
+
+    # 112
+    result = re.match("(\d+)", group)
+    if not (result is None):
+        if group == result[0]:
+            return [(result[1], "")]
+
+    # 101 ...
+    result = re.match(f"(\d+) ({name_group}+)", group)
+    if not (result is None):
+        if group == result[0]:
+            return [(result[1], result[2])]
+
+    # 303 - ...
+    result = re.match(f"({number_group}) *-* *({name_group}+)", group)
+    if not (result is None):
+        if group == result[0]:
+            return [(result[1], result[2])]
+
+    # 303, 304-...
+    result = re.match(f"({number_group}),({number_group}) *- *({name_group}+)", group)
+    if not (result is None):
+        if group == result[0]:
+            return [(result[1], result[3]), (result[2], result[3])]
+
+    # 303 - .../303 - ...
+    result = re.match(f"({number_group}) *-* *({name_group}+)"
+                      f"/*({number_group}) *-* *({name_group}+)", group)
+    if not (result is None):
+        if group == result[0]:
+            return [(result[1], result[2]), (result[3], result[4])]
+
+    # 303 - .../303 - .../303 - ...
+    result = re.match(f"({number_group}) *-* *({name_group}+)"
+                      f"/*({number_group}) *-* *({name_group}+)"
+                      f"/*({number_group}) *-* *({name_group}+)", group)
+    if not (result is None):
+        if group == result[0]:
+            return [(result[1], result[2]), (result[3], result[4]), (result[5], result[6])]
+
+    # 101М-каф.теоретической физики101ма - МП Теорет. физика101 мб МП Физика нейтрино143М -каф. физики частиц и космологиии
+    result = re.match(f"({number_group}) *-* *({name_group}+)"
+                      f"/*({number_group}) *-* *({name_group}+)"
+                      f"/*({number_group}) *-* *({name_group}+)"
+                      f"/*({number_group}) *-* *({name_group}+)", group)
+    if not (result is None):
+        if group == result[0]:
+            return [(result[1], result[2]), (result[3], result[4]), (result[5], result[6]), (result[7], result[8])]
+
+    return [(group, "")]
+
+
 def parse_group(lessons):
     """
     Парсит колонку 'group' и, если надо, добавляет допольнительные строчки в таблицу.
     Дополнительно возвращает список групп вида: [{'name': name, 'number': number}, ]
     """
-    # Регулярки запускаются по порядку до тех пор, пока не получится не null.
-    decode_patterns = [
-        "(\d+[А-Яа-яёЁ]*) *- *([А-Яа-яёЁ \.]+)",
-        "(\d+)()"
-    ]
-
     groups = ["" for _ in range(len(lessons.index))]
     new_rows = []
     unique_groups = set()
@@ -23,13 +73,7 @@ def parse_group(lessons):
         if pd.isna(group):
             continue
 
-        for regex in decode_patterns:
-            results = re.findall(regex, group)
-            if not results:
-                continue
-            else:
-                group = results
-                break
+        group = _parse_group(group)
 
         unique_groups.update(set(group))
 

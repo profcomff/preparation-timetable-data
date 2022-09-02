@@ -6,13 +6,17 @@ def parse_subjects(lessons):
     Парсит колонку 'subject' и, если надо, удаляет строчку из таблицы (если в названии предметы указаны группы).
     Дополнительно возвращает список предметов.
     """
+    number_group = "\d+[А-Яа-яёЁ]*"
+    name_subject = "[А-Яа-яёЁA-Z \./\-]+"
+
+
     subjects = []
     deleted_rows = []
     for index, row in lessons.iterrows():
         subject = row["subject"]
 
         # 307 - S
-        result = re.match("(\d+[А-Яа-яёЁ]*) - ([А-Яа-яёЁA-Z \./]+)", subject)
+        result = re.match(f"({number_group}) - ({name_subject})", subject)
         if not (result is None):
             if subject == result[0]:
                 if row["group"] != result[1]:
@@ -22,7 +26,7 @@ def parse_subjects(lessons):
                 continue
 
         # 307, 302 - S
-        result = re.match("(\d+[А-Яа-яёЁ]*)[, +]*(\d+[А-Яа-яёЁ]*) - ([А-Яа-яёЁA-Z \./]+)", subject)
+        result = re.match(f"({number_group})[, +]*({number_group}) - ({name_subject})", subject)
         if not (result is None):
             if subject == result[0]:
                 if row["group"] != result[1] and row["group"] != result[2]:
@@ -32,8 +36,7 @@ def parse_subjects(lessons):
                 continue
 
         # 307, 302, 306 - S
-        result = re.match("(\d+[А-Яа-яёЁ]*)[, +]*(\d+[А-Яа-яёЁ]*)[, +]*(\d+[А-Яа-яёЁ]*) - ([А-Яа-яёЁA-Z \./]+)",
-                          subject)
+        result = re.match(f"({number_group})[, +]*({number_group})[, +]*({number_group}) - ({name_subject})", subject)
         if not (result is None):
             if subject == result[0]:
                 if row["group"] != result[1] and row["group"] != result[2] and row["group"] != result[3]:
@@ -43,7 +46,7 @@ def parse_subjects(lessons):
                 continue
 
         # 307 - S, 302 - S
-        result = re.match("(\d+[А-Яа-яёЁ]*) - ([А-Яа-яёЁ \./]+), (\d+[А-Яа-яёЁ]*) - ([А-Яа-яёЁA-Z \./]+)", subject)
+        result = re.match(f"({number_group}) - ({number_group}), ({number_group}) - ({name_subject})", subject)
         if not (result is None):
             if subject == result[0]:
                 if row["group"] == result[1]:
@@ -55,7 +58,7 @@ def parse_subjects(lessons):
                 continue
 
         # 307 S, 302 S
-        result = re.match("(\d+[А-Яа-яёЁ]*) ([А-Яа-яёЁ \./]+), (\d+[А-Яа-яёЁ]*) ([А-Яа-яёЁA-Z \./]+)", subject)
+        result = re.match(f"({number_group}) ({number_group}), ({number_group}) ({name_subject})", subject)
         if not (result is None):
             if subject == result[0]:
                 if row["group"] == result[1]:
@@ -67,7 +70,7 @@ def parse_subjects(lessons):
                 continue
 
         # 1 поток без 307 группы - S
-        result = re.match("1 поток без [34].07 группы - ([А-Яа-яёЁA-Z \./]+)", subject)
+        result = re.match(f"1 поток без [34].07 группы - ({name_subject})", subject)
         if not (result is None):
             if subject == result[0]:
                 if row["group"] == "307" or row["group"] == "407":
@@ -77,7 +80,7 @@ def parse_subjects(lessons):
                 continue
 
         # 1 поток без 307 группы и астр. - S
-        result = re.match("1 поток без [34].07 группы,* *и астр. - ([А-Яа-яёЁA-Z \./]+)", subject)
+        result = re.match(f"1 поток без [34].07 группы,* *и астр. - ({name_subject})", subject)
         if not (result is None):
             if subject == result[0]:
                 if row["group"] == "307" or row["group"] == "301" or row["group"] == "401":
@@ -87,7 +90,7 @@ def parse_subjects(lessons):
                 continue
 
         # 306
-        result = re.match("(\d+[А-Яа-яёЁ]*) *", subject)
+        result = re.match(f"({number_group}) *", subject)
         if not (result is None):
             if subject == result[0]:
                 if row["group"] != result[1]:

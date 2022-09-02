@@ -18,17 +18,18 @@ lessons, places = parse_place(lessons)
 lessons, groups = parse_group(lessons)
 lessons, subjects = parse_subjects(lessons)
 lessons, teachers = parse_teacher(lessons)
+lessons.to_excel("lessons.xlsx")
 
 
-completion_lecturers(teachers)
-completion_rooms(places)
-completion_groups(groups)
-
-lessons = to_id(lessons)
-
-semester_begin = "09/01/2022"
-semester_end = "12/31/2022"
-
-new_lessons = calc_date(lessons, semester_begin, semester_end)
-add_lessons(new_lessons)
+# completion_lecturers(teachers)
+# completion_rooms(places)
+# completion_groups(groups)
+#
+# lessons = to_id(lessons)
+#
+# semester_begin = "09/01/2022"
+# semester_end = "12/31/2022"
+#
+# new_lessons = calc_date(lessons, semester_begin, semester_end)
+# add_lessons(new_lessons)
 
