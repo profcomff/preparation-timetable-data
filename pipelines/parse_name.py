@@ -3,6 +3,27 @@ import re
 import pandas as pd
 
 
+def _parse_name(subject):
+    parsed_name = {"subject": None, "teacher": None, "place": None}
+
+    result = re.match("([А-Яа-яёЁa-zA-Z \+,/\.\-0-9]+)<nobr>([А-Яа-яёЁa-zA-Z \+,/\.\-0-9]+)</nobr>([А-Яа-яёЁa-zA-Z \+,/\.\-0-9]+)", subject)
+    if not (result is None):
+        if subject == result[0]:
+            parsed_name["subject"] = result[1]
+            parsed_name["place"] = result[2]
+            parsed_name["teacher"] = result[3]
+            return parsed_name
+
+    result = re.match("([А-Яа-яёЁ (:).\-0-9]+)", subject)
+    if not (result is None):
+        if subject == result[0]:
+            parsed_name["subject"] = result[1]
+            return parsed_name
+
+    return {"subject": subject, "teacher": None, "place": None}
+
+
+
 def parse_name(lessons):
     """
     Разделяет колонку 'name' на 'subject', 'teacher' и 'place'.
@@ -16,15 +37,7 @@ def parse_name(lessons):
     parsed_names = []
     for index, row in lessons.iterrows():
         name = row["name"]
-        parsed_name = {"subject": None, "teacher": None, "place": None}
-
-        for regex in decode_patterns:
-            results = re.match(regex, name)
-            if results is None:
-                continue
-            else:
-                parsed_name.update(results.groupdict())
-                break
+        parsed_name = _parse_name(name)
         parsed_names.append(parsed_name)
 
     lessons = lessons.reset_index(drop=True)
