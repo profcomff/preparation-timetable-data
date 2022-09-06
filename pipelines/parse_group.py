@@ -47,6 +47,14 @@ def _parse_group(group: str):
         if group == result[0]:
             return [(result[1], result[2]), (result[3], result[4]), (result[5], result[6])]
 
+    # ОТДЕЛЕНИЕ ГЕОФИЗИКИ303 - .../303 - .../303 - ...
+    result = re.match(f"ОТДЕЛЕНИЕ ГЕОФИЗИКИ({number_group}) *-* *({name_group}+)"
+                      f"/*({number_group}) *-* *({name_group}+)"
+                      f"/*({number_group}) *-* *({name_group}+)", group)
+    if not (result is None):
+        if group == result[0]:
+            return [(result[1], result[2]), (result[3], result[4]), (result[5], result[6])]
+
     # 101М-каф.теоретической физики101ма - МП Теорет. физика101 мб МП Физика нейтрино143М -каф. физики частиц и космологиии
     result = re.match(f"({number_group}) *-* *({name_group}+)"
                       f"/*({number_group}) *-* *({name_group}+)"
