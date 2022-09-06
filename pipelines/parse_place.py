@@ -2,4 +2,13 @@ def parse_place(lessons):
     """
     Никак не меняет lessons. Дополнительно возвращает список кабинетов.
     """
-    return lessons, list(set(lessons["place"].tolist()))
+    places = lessons["place"].tolist()
+    for i, place in enumerate(places):
+        if place == "Ауд. им. Хохлова":
+            place = "ЦФА"
+
+        places[i] = place
+
+    lessons["places"] = places
+
+    return lessons, list(set(places))

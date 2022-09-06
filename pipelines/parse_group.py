@@ -55,6 +55,14 @@ def _parse_group(group: str):
         if group == result[0]:
             return [(result[1], result[2]), (result[3], result[4]), (result[5], result[6])]
 
+    # АСТРОНОМИЧЕСКОЕ ОТДЕЛЕНИЕ632...633...636-...
+    result = re.match(f"АСТРОНОМИЧЕСКОЕ ОТДЕЛЕНИЕ({number_group}) *-* *({name_group}+)"
+                      f"/*({number_group}) *-* *({name_group}+)"
+                      f"/*({number_group}) *-* *({name_group}+)", group)
+    if not (result is None):
+        if group == result[0]:
+            return [(result[1], result[2]), (result[3], result[4]), (result[5], result[6])]
+
     # 101М-каф.теоретической физики101ма - МП Теорет. физика101 мб МП Физика нейтрино143М -каф. физики частиц и космологиии
     result = re.match(f"({number_group}) *-* *({name_group}+)"
                       f"/*({number_group}) *-* *({name_group}+)"
@@ -65,6 +73,18 @@ def _parse_group(group: str):
             return [(result[1], result[2]), (result[3], result[4]), (result[5], result[6]), (result[7], result[8])]
 
     return [(group, "")]
+
+
+def _post_processing(group):
+    number = group[0]
+    name = group[1]
+
+    result = re.match("(\d+) ([А-Яа-яёЁ]+)", number)
+    if not (result is None):
+        if number == result[0]:
+            number = result[1]+result[2]
+
+    return number, name
 
 
 def parse_group(lessons):
@@ -81,7 +101,10 @@ def parse_group(lessons):
         if pd.isna(group):
             continue
 
-        group = _parse_group(group)
+        _groups = _parse_group(group)
+        group = []
+        for _group in _groups:
+            group.append(_post_processing(_group))
 
         unique_groups.update(set(group))
 
