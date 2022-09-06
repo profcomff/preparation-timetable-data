@@ -24,6 +24,9 @@ def _parse_name(subject):
 
 
 
+
+
+
 def parse_name(lessons):
     """
     Разделяет колонку 'name' на 'subject', 'teacher' и 'place'.

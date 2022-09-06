@@ -9,9 +9,11 @@ head = {"Authorization": f"Bearer {access_token}"}
 
 
 def delete_rooms():
+    print("___________________________________________________")
     url1 = 'https://timetable.api.profcomff.com/timetable/room/'
     rooms = requests.get(f'https://timetable.api.profcomff.com/timetable/room/?limit=1000&offset=0',
                          headers=head).json()
+
     for i in range(len(rooms['items'])):
         r = requests.delete(url1 + str(rooms['items'][i]['id']),
                             headers=head)
@@ -19,7 +21,9 @@ def delete_rooms():
 
 
 def delete_groups():
+    print("___________________________________________________")
     url1 = 'https://timetable.api.test.profcomff.com/timetable/group/'
+
     groups = requests.get(f'https://timetable.api.profcomff.com/timetable/group/?limit=1000&offset=0',
                           headers=head).json()
     for i in range(len(groups['items'])):
@@ -27,8 +31,8 @@ def delete_groups():
                             headers=head)
         print(r)
 
-
 def delete_lecturers():
+    print("___________________________________________________")
     url1 = 'https://timetable.api.test.profcomff.com/timetable/lecturer/'
     lecturers = requests.get(f'https://timetable.api.profcomff.com/timetable/lecturer/?limit=1000&offset=0',
                              headers=head).json()
@@ -37,3 +41,25 @@ def delete_lecturers():
                             headers=head)
         print(r)
 
+# url1 = 'https://timetable.api.test.profcomff.com/timetable/group/'
+# groups = requests.get(f'https://timetable.api.profcomff.com/timetable/group/?limit=1000&offset=0',
+#                           headers=head).json()
+# print(groups)
+
+
+def delete_events():
+    print("___________________________________________________")
+    url_event = 'https://timetable.api.profcomff.com/timetable/event/'
+    for i in range(69000, 80000):
+        r = requests.delete(url_event + str(i), headers=head)
+        print(r)
+
+
+# delete_events()
+# delete_lecturers()
+delete_groups()
+# delete_rooms()
+
+groups = requests.get(f'https://timetable.api.profcomff.com/timetable/group/?limit=1000&offset=0',
+                          headers=head).json()
+print(groups)
