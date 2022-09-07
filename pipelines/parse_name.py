@@ -16,18 +16,28 @@ def _parse_name(subject):
             parsed_name["teacher"] = result[3]
             return parsed_name
 
-    result = re.match(r"([А-Яа-яёЁ (:).\-\d]+)", subject)
-    if not (result is None):
-        if subject == result[0]:
-            parsed_name["subject"] = result[1]
-            return parsed_name
-
     # ... <nobr>Каф.</nobr>
     result = re.match(r"([А-Яа-яёЁa-zA-Z +,/.\-0-9]+)<nobr>([А-Яа-яёЁa-zA-Z +,/.\-0-9]+)</nobr> *", subject)
     if not (result is None):
         if subject == result[0]:
             parsed_name["subject"] = result[1]
             parsed_name["place"] = result[2]
+            return parsed_name
+
+    # Специальный физический практикум Андрианов Т. А.
+    result = re.match(r"Специальный физический практикум ([А-Яа-яёЁa-zA-Z +,/.\-0-9]+) *", subject)
+    if not (result is None):
+        if subject == result[0]:
+            parsed_name["subject"] = "Специальный физический практикум"
+            parsed_name["teacher"] = result[1]
+            return parsed_name
+
+    # СПЕЦПРАКТИКУМ Бессонов В. О.
+    result = re.match(r"СПЕЦПРАКТИКУМ ([А-Яа-яёЁa-zA-Z +,/.\-0-9]+) *", subject)
+    if not (result is None):
+        if subject == result[0]:
+            parsed_name["subject"] = "СПЕЦПРАКТИКУМ"
+            parsed_name["teacher"] = result[1]
             return parsed_name
 
     return {"subject": subject, "teacher": None, "place": None}

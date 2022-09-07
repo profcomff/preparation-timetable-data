@@ -79,10 +79,7 @@ def _post_processing(group):
     number = group[0]
     name = group[1]
 
-    result = re.match(r"(\d+) ([А-Яа-яёЁ]+)", number)
-    if not (result is None):
-        if number == result[0]:
-            number = result[1]+result[2]
+    name = name.replace(" ", "")
 
     return number, name
 

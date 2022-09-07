@@ -1,105 +1,95 @@
 import re
 
 
+def _compare_groups(group1, group2):
+    group2 = group2.replace(" ", "")
+
+    # Возможна ситуация названия пары 307а - ... у 307 группы (3 курс).
+    result = re.match(r"\d+", group1)
+    if result[0] == group1:
+        return group2 in group1
+
+    return group1 == group2
+
+
+def _parse_subjects(group, subject):
+    number_group = r"\d+ {0,1}[А-Яа-яёЁ]*"
+    name_subject = r"[А-Яа-яёЁA-Z ./\-]+"
+    delimiter = "[, .и+]*"
+
+    # 307{n} - ...
+    for i in range(12):
+        result = re.match(f"({number_group})" + f"{delimiter}({number_group})" * i + f" *-* ({name_subject})", subject)
+        if not (result is None):
+            if subject == result[0]:
+                if not any([_compare_groups(group, result[1 + j]) for j in range(i + 1)]):
+                    return None
+                else:
+                    return result[1 + i + 1]
+
+    # 307{n} - ..., 302{m} - ...
+    for i in range(4):
+        for j in range(4):
+            result = re.match(f"({number_group})" + f"{delimiter}({number_group})" * i + f" *-* ({name_subject}), *" +
+                              f"({number_group})" + f"{delimiter}({number_group})" * j + f" *-* ({name_subject})",
+                              subject)
+            if not (result is None):
+                if subject == result[0]:
+                    left = any([_compare_groups(group, result[1 + k]) for k in range(i + 1)])
+                    right = any([_compare_groups(group, result[1 + i + 1 + 1 + k]) for k in range(j + 1)])
+
+                    if left:
+                        return result[1 + i + 1]
+                    elif right:
+                        return result[1 + i + 1 + 1 + j + 1]
+                    else:
+                        return None
+
+    # 1 поток без 307 группы - S
+    result = re.match(f"1 поток без [34]07 группы - ({name_subject})", subject)
+    if not (result is None):
+        if subject == result[0]:
+            if any([_compare_groups(group, _group) for _group in ["307", "407"]]):
+                return None
+            else:
+                return result[1]
+
+    # 1 поток без 307 группы и астр. - S
+    result = re.match(rf"1 поток без [34]07 группы,* *и астр\.* - ({name_subject})", subject)
+    if not (result is None):
+        if subject == result[0]:
+            if any([_compare_groups(group, _group) for _group in ["307", "407", "301", "401"]]):
+                return None
+            else:
+                return result[1]
+
+    # 4 курс без астр, и 407 - S
+    result = re.match(rf"[34] курс без астр\.*,* *и [34]07 - ({name_subject})", subject)
+    if not (result is None):
+        if subject == result[0]:
+            if any([_compare_groups(group, _group) for _group in ["307", "407", "301", "401"]]):
+                return None
+            else:
+                return result[1]
+
+    return subject
+
+
 def parse_subjects(lessons):
     """
     Парсит колонку 'subject' и, если надо, удаляет строчку из таблицы (если в названии предметы указаны группы).
     Дополнительно возвращает список предметов.
     """
-    number_group = r"\d+[А-Яа-яёЁ]*"
-    name_subject = r"[А-Яа-яёЁA-Z ./\-]+"
-
-
     subjects = []
     deleted_rows = []
     for index, row in lessons.iterrows():
         subject = row["subject"]
 
-        # 307 - S
-        result = re.match(f"({number_group}) - ({name_subject})", subject)
-        if not (result is None):
-            if subject == result[0]:
-                if row["group"] != result[1]:
-                    deleted_rows.append(index)
-                else:
-                    subjects.append(result[2])
-                continue
-
-        # 307, 302 - S
-        result = re.match(f"({number_group})[, +]*({number_group}) - ({name_subject})", subject)
-        if not (result is None):
-            if subject == result[0]:
-                if row["group"] != result[1] and row["group"] != result[2]:
-                    deleted_rows.append(index)
-                else:
-                    subjects.append(result[3])
-                continue
-
-        # 307, 302, 306 - S
-        result = re.match(f"({number_group})[, +]*({number_group})[, +]*({number_group}) - ({name_subject})", subject)
-        if not (result is None):
-            if subject == result[0]:
-                if row["group"] != result[1] and row["group"] != result[2] and row["group"] != result[3]:
-                    deleted_rows.append(index)
-                else:
-                    subjects.append(result[4])
-                continue
-
-        # 307 - S, 302 - S
-        result = re.match(f"({number_group}) - ({number_group}), ({number_group}) - ({name_subject})", subject)
-        if not (result is None):
-            if subject == result[0]:
-                if row["group"] == result[1]:
-                    subjects.append(result[2])
-                elif row["group"] == result[3]:
-                    subjects.append(result[4])
-                else:
-                    deleted_rows.append(index)
-                continue
-
-        # 307 S, 302 S
-        result = re.match(f"({number_group}) ({number_group}), ({number_group}) ({name_subject})", subject)
-        if not (result is None):
-            if subject == result[0]:
-                if row["group"] == result[1]:
-                    subjects.append(result[2])
-                elif row["group"] == result[3]:
-                    subjects.append(result[4])
-                else:
-                    deleted_rows.append(index)
-                continue
-
-        # 1 поток без 307 группы - S
-        result = re.match(f"1 поток без [34].07 группы - ({name_subject})", subject)
-        if not (result is None):
-            if subject == result[0]:
-                if row["group"] == "307" or row["group"] == "407":
-                    deleted_rows.append(index)
-                else:
-                    subjects.append(result[1])
-                continue
-
-        # 1 поток без 307 группы и астр. - S
-        result = re.match(f"1 поток без [34].07 группы,* *и астр. - ({name_subject})", subject)
-        if not (result is None):
-            if subject == result[0]:
-                if row["group"] == "307" or row["group"] == "301" or row["group"] == "401":
-                    deleted_rows.append(index)
-                else:
-                    subjects.append(result[1])
-                continue
-
-        # 306
-        result = re.match(f"({number_group}) *", subject)
-        if not (result is None):
-            if subject == result[0]:
-                if row["group"] != result[1]:
-                    deleted_rows.append(index)
-                else:
-                    subjects.append(result[1])
-                continue
-
-        subjects.append(subject)
+        subject = _parse_subjects(row["group"], subject)
+        if subject is None:
+            deleted_rows.append(index)
+        else:
+            subjects.append(subject)
 
     lessons.drop(deleted_rows, axis=0, inplace=True)
     lessons["subject"] = subjects
