@@ -1,7 +1,5 @@
 import pandas as pd
-from datetime import timedelta, datetime, timezone
-
-import requests
+from datetime import timedelta, datetime
 
 
 def calc_date(lessons, semester_begin, semester_end):

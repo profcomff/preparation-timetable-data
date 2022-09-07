@@ -1,34 +1,16 @@
-import json
-
 import pandas as pd
 import requests
 
-# url = f"https://timetable.api.profcomff.com"
-# beaver = requests.post(f"{url}/token", {"username": "timetable_fill", "password": "J2Jmc9mgn31jeSGa"})
-# access_token = beaver.json().get("access_token")
-#
-# auth_data = json.loads(beaver.content)
-#
-# header = {"Authorization": f"Bearer {access_token}"}
-#
-# url_room = f'https://timetable.api.profcomff.com/timetable/room/?limit=1000&offset=0'
-# url_group = f'https://timetable.api.profcomff.com/timetable/group/?limit=1000&offset=0'
-# url_lecturer = f'https://timetable.api.profcomff.com/timetable/lecturer/?limit=1000&offset=0&details=description'
+import authorization
+from authorization import get_url
 
-url = f"https://timetable.api.test.profcomff.com"
-beaver = requests.post(f"{url}/token", {"username": "admin", "password": "42"})
-access_token = beaver.json().get("access_token")
+url_room = get_url() + "/timetable/room/?limit=1000&offset=0"
+url_group = get_url() + "/timetable/group/?limit=1000&offset=0"
+url_lecturer = get_url() + "/timetable/lecturer/?limit=1000&offset=0&details=description"
 
-auth_data = json.loads(beaver.content)
-
-header = {"Authorization": f"Bearer {access_token}"}
-
-url_room = f'https://timetable.api.test.profcomff.com/timetable/room/?limit=1000&offset=0'
-url_group = f'https://timetable.api.test.profcomff.com/timetable/group/?limit=1000&offset=0'
-url_lecturer = f'https://timetable.api.test.profcomff.com/timetable/lecturer/?limit=1000&offset=0&details=description'
 
 def room_to_id(lessons):
-    response = requests.get(url_room, headers=header)
+    response = requests.get(url_room, headers=authorization.headers)
     rooms = response.json()["items"]
 
     place = lessons["place"].tolist()
@@ -43,7 +25,7 @@ def room_to_id(lessons):
 
 
 def group_to_id(lessons):
-    response = requests.get(url_group, headers=header)
+    response = requests.get(url_group, headers=authorization.headers)
     groups = response.json()["items"]
 
     new_groups = lessons["group"].tolist()
@@ -53,12 +35,11 @@ def group_to_id(lessons):
                 new_groups[i] = group["id"]
                 break
     lessons["group"] = new_groups
-    new_groups = pd.DataFrame(new_groups)
     return lessons
 
 
 def teacher_to_id(lessons):
-    response = requests.get(url_lecturer, headers=header)
+    response = requests.get(url_lecturer, headers=authorization.headers)
     teachers = response.json()["items"]
 
     new_teacher = lessons["teacher"].tolist()

@@ -9,6 +9,6 @@ def parse_place(lessons):
 
         places[i] = place
 
-    lessons["places"] = places
+    lessons["place"] = places
 
     return lessons, list(set(places))

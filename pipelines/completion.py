@@ -1,42 +1,19 @@
-import json
-
 import pandas as pd
 import requests
+import authorization
 
-# url = f"https://timetable.api.profcomff.com"
-# beaver = requests.post(f"{url}/token", {"username": "timetable_fill", "password": "J2Jmc9mgn31jeSGa"})
-# access_token = beaver.json().get("access_token")
-# auth_data = json.loads(beaver.content)
-# header = {"Authorization": f"Bearer {access_token}"}
-#
-# url_get_lecturer = f'https://timetable.api.profcomff.com/timetable/lecturer/?limit=1000&offset=0&details' \
-#                    f'=description '
-# url_post_lecturer = f'https://timetable.api.profcomff.com/timetable/lecturer/'
-#
-# url_get_room = f'https://timetable.api.profcomff.com/timetable/room/?limit=1000&offset=0'
-# url_post_room = f'https://timetable.api.profcomff.com/timetable/room/'
-#
-# url_get_group = f'https://timetable.api.profcomff.com/timetable/group/?limit=1000&offset=0'
-# url_post_group = f'https://timetable.api.profcomff.com/timetable/group/'
+url_get_lecturer = authorization.get_url() + '/timetable/lecturer/?limit=1000&offset=0&details=description'
+url_post_lecturer = authorization.get_url() + '/timetable/lecturer/'
 
-url = f"https://timetable.api.test.profcomff.com"
-beaver = requests.post(f"{url}/token", {"username": "admin", "password": "42"})
-access_token = beaver.json().get("access_token")
-auth_data = json.loads(beaver.content)
-header = {"Authorization": f"Bearer {access_token}"}
+url_get_room = authorization.get_url() + '/timetable/room/?limit=1000&offset=0'
+url_post_room = authorization.get_url() + '/timetable/room/'
 
-url_get_lecturer = f'https://timetable.api.test.profcomff.com/timetable/lecturer/?limit=1000&offset=0&details' \
-                   f'=description '
-url_post_lecturer = f'https://timetable.api.test.profcomff.com/timetable/lecturer/'
+url_get_group = authorization.get_url() + '/timetable/group/?limit=1000&offset=0'
+url_post_group = authorization.get_url() + '/timetable/group/'
 
-url_get_room = f'https://timetable.api.test.profcomff.com/timetable/room/?limit=1000&offset=0'
-url_post_room = f'https://timetable.api.test.profcomff.com/timetable/room/'
-
-url_get_group = f'https://timetable.api.test.profcomff.com/timetable/group/?limit=1000&offset=0'
-url_post_group = f'https://timetable.api.test.profcomff.com/timetable/group/'
 
 def completion_lecturers(new_lecturers):
-    response = requests.get(url_get_lecturer, headers=header)
+    response = requests.get(url_get_lecturer, headers=authorization.headers)
     old_lecturers = response.json()["items"]
     new_lecturers = list(map(lambda x: x.split(), new_lecturers))
 
@@ -55,11 +32,11 @@ def completion_lecturers(new_lecturers):
             first_name = new_lecturer[1]
             middle_name = new_lecturer[2]
             data = {'first_name': first_name, 'middle_name': middle_name, 'last_name': last_name}
-            requests.post(url_post_lecturer, json=data, headers=header)
+            requests.post(url_post_lecturer, json=data, headers=authorization.headers)
 
 
 def completion_rooms(new_rooms):
-    response = requests.get(url_get_room, headers=header)
+    response = requests.get(url_get_room, headers=authorization.headers)
     old_rooms = response.json()["items"]
 
     b = False
@@ -73,10 +50,11 @@ def completion_rooms(new_rooms):
             name = new_room
             if pd.notna(name):
                 data = {'name': name, 'direction': None}
-                requests.post(url_post_room, json=data, headers=header)
+                requests.post(url_post_room, json=data, headers=authorization.headers)
+
 
 def completion_groups(new_groups):
-    response = requests.get(url_get_group, headers=header)
+    response = requests.get(url_get_group, headers=authorization.headers)
     old_groups = response.json()["items"]
 
     addition = []
@@ -91,6 +69,4 @@ def completion_groups(new_groups):
             number = new_group[0]
             name = new_group[1]
             data = {'name': name, 'number': number}
-            requests.post(url_post_group, json=data, headers=header)
-            # addition.append(number)
-    # return addition
+            requests.post(url_post_group, json=data, headers=authorization.headers)

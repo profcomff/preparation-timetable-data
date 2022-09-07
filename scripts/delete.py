@@ -1,57 +1,50 @@
 import requests
 import json
 
-url = f"https://timetable.api.profcomff.com"
-beaver = requests.post(f"{url}/token", {"username": "timetable_fill", "password": "J2Jmc9mgn31jeSGa"})
-access_token = beaver.json().get("access_token")
-auth_data = json.loads(beaver.content)
-head = {"Authorization": f"Bearer {access_token}"}
+import authorization
+
+url_get_lecturer = authorization.get_url() + '/timetable/lecturer/?limit=1000&offset=0&details=description'
+url_delete_lecturer = authorization.get_url() + '/timetable/lecturer/'
+
+url_get_room = authorization.get_url() + '/timetable/room/?limit=1000&offset=0'
+url_delete_room = authorization.get_url() + '/timetable/room/'
+
+url_get_group = authorization.get_url() + '/timetable/group/?limit=1000&offset=0'
+url_delete_group = authorization.get_url() + '/timetable/group/'
 
 
 def delete_rooms():
     print("___________________________________________________")
-    url1 = 'https://timetable.api.profcomff.com/timetable/room/'
-    rooms = requests.get(f'https://timetable.api.profcomff.com/timetable/room/?limit=1000&offset=0',
-                         headers=head).json()
+    rooms = requests.get(url_get_room, headers=authorization.headers).json()
 
     for i in range(len(rooms['items'])):
-        r = requests.delete(url1 + str(rooms['items'][i]['id']),
-                            headers=head)
+        r = requests.delete(url_delete_room + str(rooms['items'][i]['id']), headers=authorization.headers)
         print(r)
 
 
 def delete_groups():
     print("___________________________________________________")
-    url1 = 'https://timetable.api.test.profcomff.com/timetable/group/'
 
-    groups = requests.get(f'https://timetable.api.profcomff.com/timetable/group/?limit=1000&offset=0',
-                          headers=head).json()
+    groups = requests.get(url_get_group, headers=authorization.headers).json()
     for i in range(len(groups['items'])):
-        r = requests.delete(url1 + str(groups['items'][i]['id']),
-                            headers=head)
+        r = requests.delete(url_delete_group + str(groups['items'][i]['id']), headers=authorization.headers)
         print(r)
+
 
 def delete_lecturers():
     print("___________________________________________________")
     url1 = 'https://timetable.api.test.profcomff.com/timetable/lecturer/'
-    lecturers = requests.get(f'https://timetable.api.profcomff.com/timetable/lecturer/?limit=1000&offset=0',
-                             headers=head).json()
+    lecturers = requests.get(url_get_lecturer, headers=authorization.headers).json()
     for i in range(len(lecturers['items'])):
-        r = requests.delete(url1 + str(lecturers['items'][i]['id']),
-                            headers=head)
+        r = requests.delete(url_delete_lecturer + str(lecturers['items'][i]['id']), headers=authorization.headers)
         print(r)
-
-# url1 = 'https://timetable.api.test.profcomff.com/timetable/group/'
-# groups = requests.get(f'https://timetable.api.profcomff.com/timetable/group/?limit=1000&offset=0',
-#                           headers=head).json()
-# print(groups)
 
 
 def delete_events():
     print("___________________________________________________")
-    url_event = 'https://timetable.api.profcomff.com/timetable/event/'
+    url_event = authorization.get_url() + '/timetable/event/'
     for i in range(69000, 80000):
-        r = requests.delete(url_event + str(i), headers=head)
+        r = requests.delete(url_event + str(i), headers=authorization.headers)
         print(r)
 
 
@@ -59,7 +52,3 @@ def delete_events():
 # delete_lecturers()
 delete_groups()
 # delete_rooms()
-
-groups = requests.get(f'https://timetable.api.profcomff.com/timetable/group/?limit=1000&offset=0',
-                          headers=head).json()
-print(groups)
