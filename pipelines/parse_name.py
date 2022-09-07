@@ -22,6 +22,14 @@ def _parse_name(subject):
             parsed_name["subject"] = result[1]
             return parsed_name
 
+    # ... <nobr>Каф.</nobr>
+    result = re.match(r"([А-Яа-яёЁa-zA-Z +,/.\-0-9]+)<nobr>([А-Яа-яёЁa-zA-Z +,/.\-0-9]+)</nobr> *", subject)
+    if not (result is None):
+        if subject == result[0]:
+            parsed_name["subject"] = result[1]
+            parsed_name["place"] = result[2]
+            return parsed_name
+
     return {"subject": subject, "teacher": None, "place": None}
 
 

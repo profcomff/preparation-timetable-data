@@ -19,8 +19,8 @@ lessons = parse_name(lessons)
 
 lessons, places = parse_place(lessons)
 lessons, groups = parse_group(lessons)
-lessons, subjects = parse_subjects(lessons)
 lessons, teachers = parse_teacher(lessons)
+lessons, subjects = parse_subjects(lessons)
 
 completion_lecturers(teachers)
 completion_rooms(places)
