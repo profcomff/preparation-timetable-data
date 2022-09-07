@@ -1,12 +1,11 @@
 import enum
+
 import requests
 
 headers = {}
 
 MODES = enum.Enum("Modes", "test prod")
 mode = MODES.test
-
-# mode = "test"
 
 TEST_URL = "https://timetable.api.test.profcomff.com"
 PROD_URL = "https://timetable.api.profcomff.com"
@@ -19,12 +18,8 @@ def get_url():
         return TEST_URL
 
 
-def authorization(login, passoword):
+def authorization(login, password):
     url = get_url()
-    beaver = requests.post(f"{url}/token", {"username": login, "password": passoword})
+    beaver = requests.post(f"{url}/token", {"username": login, "password": password})
     access_token = beaver.json().get("access_token")
     authorization.headers = {"Authorization": f"Bearer {access_token}"}
-
-
-
-

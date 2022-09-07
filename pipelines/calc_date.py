@@ -3,7 +3,6 @@ from datetime import timedelta, datetime
 
 
 def calc_date(lessons, semester_begin, semester_end):
-    print("________________________________________________")
     begin = datetime.strptime(semester_begin, "%m/%d/%Y")
     end = datetime.strptime(semester_end, "%m/%d/%Y")
 

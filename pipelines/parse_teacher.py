@@ -15,7 +15,7 @@ def parse_teacher(lessons):
         teacher = row["teacher"]
 
         if pd.notna(teacher):
-            teacher = re.findall("[А-Яа-яёЁ]+ [А-Яа-яёЁ]{1}\. [А-Яа-яёЁ]{1}\.", teacher)
+            teacher = re.findall(r"[А-Яа-яёЁ]+ [А-Яа-яёЁ]\. [А-Яа-яёЁ]\.", teacher)
             unique_teachers.update(set(teacher))
 
         teachers.append(teacher)

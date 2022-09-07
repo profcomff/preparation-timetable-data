@@ -5,17 +5,17 @@ import pandas as pd
 
 
 def _parse_group(group: str):
-    name_group = "[А-Яа-яёЁ \.,\-:]"
-    number_group = "\d+ {0,1}[А-Яа-яёЁ]*"
+    name_group = r"[А-Яа-яёЁ \.,\-:]"
+    number_group = r"\d+ {0,1}[А-Яа-яёЁ]*"
 
     # 112
-    result = re.match("(\d+)", group)
+    result = re.match(r"(\d+)", group)
     if not (result is None):
         if group == result[0]:
             return [(result[1], "")]
 
     # 101 ...
-    result = re.match(f"(\d+) ({name_group}+)", group)
+    result = re.match(rf"(\d+) ({name_group}+)", group)
     if not (result is None):
         if group == result[0]:
             return [(result[1], result[2])]
@@ -63,7 +63,7 @@ def _parse_group(group: str):
         if group == result[0]:
             return [(result[1], result[2]), (result[3], result[4]), (result[5], result[6])]
 
-    # 101М-каф.теоретической физики101ма - МП Теорет. физика101 мб МП Физика нейтрино143М -каф. физики частиц и космологиии
+    # 101М-...101ма - МП ...101 мб МП ...143М -...
     result = re.match(f"({number_group}) *-* *({name_group}+)"
                       f"/*({number_group}) *-* *({name_group}+)"
                       f"/*({number_group}) *-* *({name_group}+)"
@@ -79,7 +79,7 @@ def _post_processing(group):
     number = group[0]
     name = group[1]
 
-    result = re.match("(\d+) ([А-Яа-яёЁ]+)", number)
+    result = re.match(r"(\d+) ([А-Яа-яёЁ]+)", number)
     if not (result is None):
         if number == result[0]:
             number = result[1]+result[2]
@@ -89,7 +89,7 @@ def _post_processing(group):
 
 def parse_group(lessons):
     """
-    Парсит колонку 'group' и, если надо, добавляет допольнительные строчки в таблицу.
+    Парсит колонку 'group' и, если надо, добавляет дополнительные строчки в таблицу.
     Дополнительно возвращает список групп вида: [{'name': name, 'number': number}, ]
     """
     groups = ["" for _ in range(len(lessons.index))]

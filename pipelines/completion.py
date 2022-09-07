@@ -1,5 +1,6 @@
 import pandas as pd
 import requests
+
 import authorization
 
 url_get_lecturer = authorization.get_url() + '/timetable/lecturer/?limit=1000&offset=0&details=description'
@@ -57,7 +58,6 @@ def completion_groups(new_groups):
     response = requests.get(url_get_group, headers=authorization.headers)
     old_groups = response.json()["items"]
 
-    addition = []
     b = False
     for new_group in new_groups:
         for old_group in old_groups:
