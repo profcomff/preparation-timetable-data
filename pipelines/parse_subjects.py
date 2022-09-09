@@ -1,11 +1,22 @@
 import re
 
 
+def _preprocessing(subject):
+    if subject == "105М, 106М, 110М, 141М - 105МДМП, 106М, 141М, 110М с/к по выб ":
+        return "105М, 106М, 110М, 141М - 105М ДМП, 106М, 141М, 110М с/к по выб "
+
+    if subject == "216Ма, 221М - 216мА ДМП,С/К по выбору 221м ":
+        return "216Ма, 221М - 216мА ДМП,221м - С/К по выбору "
+
+    return subject
+
+
 def _compare_groups(group1, group2):
     group2 = group2.replace(" ", "")
+    group2 = group2.lower()
 
     # Возможна ситуация названия пары 307а - ... у 307 группы (3 курс).
-    result = re.match(r"\d+", group1)
+    result = re.match(r"\d{3}", group1)
     if result[0] == group1:
         return group2 in group1
 
@@ -13,9 +24,11 @@ def _compare_groups(group1, group2):
 
 
 def _parse_subjects(group, subject):
-    number_group = r"\d+ {0,1}[А-Яа-яёЁ]*"
+    number_group = r"\d{3} {0,1}[А-Яа-яёЁ]*"
     name_subject = r"[А-Яа-яёЁA-Z ./\-]+"
-    delimiter = "[, .и+]*"
+    delimiter = r"[, .и+\-]*"
+
+    subject = _preprocessing(subject)
 
     # 307{n} - ...
     for i in range(12):
@@ -28,8 +41,8 @@ def _parse_subjects(group, subject):
                     return result[1 + i + 1]
 
     # 307{n} - ..., 302{m} - ...
-    for i in range(4):
-        for j in range(4):
+    for i in range(8):
+        for j in range(8):
             result = re.match(f"({number_group})" + f"{delimiter}({number_group})" * i + f" *-* ({name_subject}), *" +
                               f"({number_group})" + f"{delimiter}({number_group})" * j + f" *-* ({name_subject})",
                               subject)

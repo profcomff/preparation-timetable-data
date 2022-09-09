@@ -6,7 +6,7 @@ import pandas as pd
 
 def _parse_group(group: str):
     name_group = r"[А-Яа-яёЁ \.,\-:]"
-    number_group = r"\d+ {0,1}[А-Яа-яёЁ]*"
+    number_group = r"\d{3} {0,1}[А-Яа-яёЁ]*"
 
     # 112
     result = re.match(r"(\d+)", group)
@@ -79,7 +79,8 @@ def _post_processing(group):
     number = group[0]
     name = group[1]
 
-    name = name.replace(" ", "")
+    number = number.replace(" ", "")
+    number = number.lower()
 
     return number, name
 
