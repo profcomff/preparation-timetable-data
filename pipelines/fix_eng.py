@@ -1,12 +1,20 @@
 import pandas as pd
 import requests
 
-import authorization
+import authorization as au
+import password
+
+headers = {}
+# au.authorization(password.login, password.password)
+url = au.get_url()
+beaver = requests.post(f"{url}/token", {"username": password.login, "password": password.password})
+access_token = beaver.json().get("access_token")
+headers = {"Authorization": f"Bearer {access_token}"}
 
 
 def fix_eng(lessons):
-    url_group = authorization.get_url() + "/timetable/group/?limit=1000&offset=0"
-    r = requests.get(url_group, headers=authorization.headers)
+    url_group = au.get_url_group(au.MODES_URL.get)
+    r = requests.get(url_group, headers=headers)
     groups = r.json()['items']
     groups = pd.DataFrame(groups)
 

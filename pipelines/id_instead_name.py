@@ -1,15 +1,17 @@
 import requests
 
-import authorization
+import authorization as au
+import password
 from authorization import get_url
 
-url_room = get_url() + "/timetable/room/?limit=1000&offset=0"
-url_group = get_url() + "/timetable/group/?limit=1000&offset=0"
-url_lecturer = get_url() + "/timetable/lecturer/?limit=1000&offset=0&details=description"
-
+# au.authorization(password.login, password.password)
+url = au.get_url()
+beaver = requests.post(f"{url}/token", {"username": password.login, "password": password.password})
+access_token = beaver.json().get("access_token")
+headers = {"Authorization": f"Bearer {access_token}"}
 
 def room_to_id(lessons):
-    response = requests.get(url_room, headers=authorization.headers)
+    response = requests.get(au.get_url_room(au.MODES_URL.get), headers=headers)
     rooms = response.json()["items"]
 
     place = lessons["place"].tolist()
@@ -24,7 +26,7 @@ def room_to_id(lessons):
 
 
 def group_to_id(lessons):
-    response = requests.get(url_group, headers=authorization.headers)
+    response = requests.get(au.get_url_group(au.MODES_URL.get), headers=headers)
     groups = response.json()["items"]
 
     new_groups = lessons["group"].tolist()
@@ -38,7 +40,7 @@ def group_to_id(lessons):
 
 
 def teacher_to_id(lessons):
-    response = requests.get(url_lecturer, headers=authorization.headers)
+    response = requests.get(au.get_url_lecturer(au.MODES_URL.get), headers=headers)
     teachers = response.json()["items"]
 
     new_teacher = lessons["teacher"].tolist()
