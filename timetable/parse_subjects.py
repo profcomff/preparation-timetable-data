@@ -1,7 +1,12 @@
 import re
 
+import logger
+
+_logger = logger.get_logger(__name__)
+
 
 def _preprocessing(subject):
+    """По сути, исправление опечаток в названии пар."""
     if subject == "105М, 106М, 110М, 141М - 105МДМП, 106М, 141М, 110М с/к по выб ":
         return "105М, 106М, 110М, 141М - 105М ДМП, 106М, 141М, 110М с/к по выб "
 
@@ -12,18 +17,23 @@ def _preprocessing(subject):
 
 
 def _compare_groups(group1, group2):
+    """Сравнение групп. Этот процесс сложнее, чем '=='."""
     group2 = group2.replace(" ", "")
     group2 = group2.lower()
 
     # Возможна ситуация названия пары 307а - ... у 307 группы (3 курс).
-    result = re.match(r"\d{3}", group1)
-    if result[0] == group1:
-        return group2 in group1
+    result = re.match(r"\d{3}\D", group2)
+    if result is not None:
+        return group1 in group2
 
     return group1 == group2
 
 
 def _parse_subjects(group, subject):
+    """
+    Парсит 'subjects' по заданным регулярным выражениям.
+    В случае отсутствия подходящего регулярного выражения выдает предупреждение и возвращает сам 'subject'.
+    """
     number_group = r"\d{3} {0,1}[А-Яа-яёЁ]*"
     name_subject = r"[А-Яа-яёЁA-Z ./\-]+"
     delimiter = r"[, .и+\-]*"
@@ -85,6 +95,19 @@ def _parse_subjects(group, subject):
             else:
                 return result[1]
 
+    # Механика
+    result = re.match(f"({name_subject})", subject)
+    if not (result is None):
+        if subject == result[0]:
+            return result[1]
+
+    # 15.10-18.50 МЕЖФАКУЛЬТЕТСКИЕ КУРСЫ
+    result = re.match(r"(15\.10-18\.50 МЕЖФАКУЛЬТЕТСКИЕ КУРСЫ)", subject)
+    if not (result is None):
+        if subject == result[0]:
+            return result[1]
+
+    _logger.warn(f"Для '{subject}' не найдено подходящее регулярное выражение.")
     return subject
 
 
@@ -93,6 +116,8 @@ def parse_subjects(lessons):
     Парсит колонку 'subject' и, если надо, удаляет строчку из таблицы (если в названии предметы указаны группы).
     Дополнительно возвращает список предметов.
     """
+    _logger.info("Начинаю парсить 'subjects'...")
+
     subjects = []
     deleted_rows = []
     for index, row in lessons.iterrows():
