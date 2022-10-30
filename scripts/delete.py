@@ -1,54 +1,50 @@
 import requests
 import json
 
-import authorization
+import authorization as au
+import password
 
-url_get_lecturer = authorization.get_url() + '/timetable/lecturer/?limit=1000&offset=0&details=description'
-url_delete_lecturer = authorization.get_url() + '/timetable/lecturer/'
-
-url_get_room = authorization.get_url() + '/timetable/room/?limit=1000&offset=0'
-url_delete_room = authorization.get_url() + '/timetable/room/'
-
-url_get_group = authorization.get_url() + '/timetable/group/?limit=1000&offset=0'
-url_delete_group = authorization.get_url() + '/timetable/group/'
-
+headers = {}
+# au.authorization(password.login, password.password)
+url = au.get_url()
+beaver = requests.post(f"{url}/token", {"username": password.login, "password": password.password})
+access_token = beaver.json().get("access_token")
+headers = {"Authorization": f"Bearer {access_token}"}
 
 def delete_rooms():
-    print("___________________________________________________")
-    rooms = requests.get(url_get_room, headers=authorization.headers).json()
+    rooms = requests.get(au.get_url_room(au.MODES_URL.get), headers=headers).json()
 
     for i in range(len(rooms['items'])):
-        r = requests.delete(url_delete_room + str(rooms['items'][i]['id']), headers=authorization.headers)
+        r = requests.delete(au.get_url_room(au.MODES_URL.delete) + str(rooms['items'][i]['id']), headers=headers)
         print(r)
 
 
 def delete_groups():
-    print("___________________________________________________")
 
-    groups = requests.get(url_get_group, headers=authorization.headers).json()
+    groups = requests.get(au.get_url_group(au.MODES_URL.get), headers=au.headers).json()
     for i in range(len(groups['items'])):
-        r = requests.delete(url_delete_group + str(groups['items'][i]['id']), headers=authorization.headers)
+        r = requests.delete(au.get_url_group(au.MODES_URL.delete) + str(groups['items'][i]['id']), headers=headers)
         print(r)
 
 
 def delete_lecturers():
-    print("___________________________________________________")
-    url1 = 'https://timetable.api.test.profcomff.com/timetable/lecturer/'
-    lecturers = requests.get(url_get_lecturer, headers=authorization.headers).json()
+    lecturers = requests.get(au.get_url_lecturer(au.MODES_URL.get), headers=au.headers).json()
     for i in range(len(lecturers['items'])):
-        r = requests.delete(url_delete_lecturer + str(lecturers['items'][i]['id']), headers=authorization.headers)
+        r = requests.delete(au.get_url_lecturer(au.MODES_URL.delete)+ str(lecturers['items'][i]['id']), headers=headers)
         print(r)
 
 
 def delete_events():
-    print("___________________________________________________")
-    url_event = authorization.get_url() + '/timetable/event/'
-    for i in range(69000, 80000):
-        r = requests.delete(url_event + str(i), headers=authorization.headers)
+    for i in range(9000, 9050):
+        r = requests.delete(au.get_url_event(au.MODES_URL.delete) + str(i), headers=headers)
         print(r)
 
 
-# delete_events()
-# delete_lecturers()
+delete_events()
+delete_lecturers()
+print(au.headers)
+# print(str(au.get_url_group(au.MODES_URL.delete) + "2"))
+# r = requests.delete(au.get_url_group(au.MODES_URL.delete) + "2", headers=au.headers)
+# print(r)
 delete_groups()
-# delete_rooms()
+delete_rooms()
