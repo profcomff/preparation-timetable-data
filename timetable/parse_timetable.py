@@ -198,6 +198,5 @@ def parse_timetable():
             except Exception:
                 _logger.warn(f"'{source[0]}/{source[1]}/{group}' парсинг завершился ошибкой.")
                 raise
-            _logger.info(f"'{source[0]}/{source[1]}/{group}' успешный парсинг.")
 
     return results
