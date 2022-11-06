@@ -2,7 +2,7 @@ import re
 
 import pandas as pd
 
-import logger
+from utilities import logger
 
 _logger = logger.get_logger(__name__)
 

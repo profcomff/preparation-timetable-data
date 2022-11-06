@@ -1,6 +1,12 @@
 from timetable import *
+from utilities.argparser import get_parser
 
+parser = get_parser()
+args = parser.parse_args()
+if args.database == "prod":
+    input("WARNING: Загрузка на прод. Вы уверены (CTRL+C если нет)?")
 
+# ---------------- Parsing ----------------
 lessons = parse_timetable()
 lessons = parse_name(lessons)
 
@@ -11,16 +17,18 @@ lessons, subjects = parse_subjects(lessons)
 
 # lessons = fix_eng(lessons)
 
-lessons.to_excel("lessons.xlsx")
+if args.debug:
+    # TODO: Тест парсинга по изначальным данным.
+    lessons.to_excel("lessons.xlsx")
 
-# completion_lecturers(teachers)
-# completion_rooms(places)
-# completion_groups(groups)
-#
-# lessons = to_id(lessons)
-#
-# semester_begin = "09/05/2022"
-# semester_end = "09/18/2022"
-# lessons = calc_date(lessons, semester_begin, semester_end)
+# ---------------- Loading to server ----------------
+if not args.debug:
+    pass
+    # completion_lecturers(teachers)
+    # completion_rooms(places)
+    # completion_groups(groups)
 
-# add_lessons(lessons)
+    # lessons = to_id(lessons)
+    # lessons = calc_date(lessons, args.begin, args.end)
+
+    # add_lessons(lessons)

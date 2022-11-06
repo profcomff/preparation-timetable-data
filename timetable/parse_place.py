@@ -1,4 +1,4 @@
-import logger
+from utilities import logger
 
 # Словарь для переименования.
 _rename_place = {"Ауд. им. Хохлова": "ЦФА"}

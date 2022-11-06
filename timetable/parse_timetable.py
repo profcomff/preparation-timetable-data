@@ -8,7 +8,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-import logger
+from utilities import logger
 
 _logger = logger.get_logger(__name__)
 

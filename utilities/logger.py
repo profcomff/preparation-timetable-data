@@ -1,9 +1,10 @@
 import logging
+import os.path
 from datetime import datetime
 
 _log_file_format = f"%(asctime)s - %(levelname)s - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
 _log_stream_format = f"%(levelname)s - %(message)s"
-_file_name = datetime.now().strftime("%m-%d-%Y_%H-%M-%S-%f") + ".log"
+_file_name = os.path.join("logs", datetime.now().strftime("%m-%d-%Y_%H-%M-%S-%f") + ".log")
 
 
 def _get_file_handler():

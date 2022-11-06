@@ -1,6 +1,6 @@
 import re
 
-import logger
+from utilities import logger
 
 _logger = logger.get_logger(__name__)
 
