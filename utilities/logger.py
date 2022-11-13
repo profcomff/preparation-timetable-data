@@ -23,9 +23,9 @@ def _get_stream_handler():
     return stream_handler
 
 
-def get_logger(name):
+def get_root_logger():
     """Создает логгер."""
-    logger = logging.getLogger(name)
+    logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     logger.addHandler(_get_file_handler())
     logger.addHandler(_get_stream_handler())

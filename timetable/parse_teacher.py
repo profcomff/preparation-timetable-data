@@ -1,10 +1,9 @@
+import logging
 import re
 
 import pandas as pd
 
-from utilities import logger
-
-_logger = logger.get_logger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def parse_teacher(lessons):

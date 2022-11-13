@@ -1,5 +1,8 @@
 from timetable import *
+from utilities import logger
 from utilities.argparser import get_parser
+
+root_logger = logger.get_root_logger()
 
 parser = get_parser()
 args = parser.parse_args()

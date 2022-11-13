@@ -2,15 +2,14 @@
 Этот модуль содержит классы для парсинга сайта расписания и
 запускающую функцию.
 """
+import logging
 from typing import Any, List, Dict
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-from utilities import logger
-
-_logger = logger.get_logger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class Group:
@@ -196,7 +195,7 @@ def parse_timetable():
                                     headers=HEADERS).text
                 results = pd.concat([results, pd.DataFrame(run(html))])
             except Exception:
-                _logger.warn(f"'{source[0]}/{source[1]}/{group}' парсинг завершился ошибкой.")
+                _logger.warning(f"'{source[0]}/{source[1]}/{group}' парсинг завершился ошибкой.")
                 raise
 
     return results

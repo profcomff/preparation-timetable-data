@@ -1,9 +1,9 @@
-from utilities import logger
+import logging
 
 # Словарь для переименования.
 _rename_place = {"Ауд. им. Хохлова": "ЦФА"}
 
-_logger = logger.get_logger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def parse_place(lessons):
@@ -19,5 +19,4 @@ def parse_place(lessons):
         places[i] = place
 
     lessons["place"] = places
-
     return lessons, list(set(places))

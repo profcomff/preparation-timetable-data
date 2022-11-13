@@ -1,10 +1,9 @@
+import logging
 import re
 
 import pandas as pd
 
-from utilities import logger
-
-_logger = logger.get_logger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def _parse_group(group):
@@ -15,71 +14,28 @@ def _parse_group(group):
     name_group = r"[А-Яа-яёЁ \.,\-:]"
     number_group = r"\d{3} {0,1}[А-Яа-яёЁ]*"
 
-    # 112
-    result = re.match(r"(\d+)", group)
-    if not (result is None):
-        if group == result[0]:
-            return [(result[1], "")]
-
-    # 101 ...
-    result = re.match(rf"(\d+) ({name_group}+)", group)
+    # '113 ...'
+    result = re.match(rf"(\d+) *([А-Яа-яёЁ: ]*)", group)
     if not (result is None):
         if group == result[0]:
             return [(result[1], result[2])]
 
-    # 303 - ...
-    result = re.match(f"({number_group}) *-* *({name_group}+)", group)
-    if not (result is None):
-        if group == result[0]:
-            return [(result[1], result[2])]
+    # '303{n} - ...'
+    for i in range(3):
+        result = re.match(f"({number_group})" + f" *, *({number_group})" * i + f" *- *({name_group}+)", group)
+        if not (result is None):
+            if group == result[0]:
+                return [(result[_i + 1], result[i + 1 + 1]) for _i in range(i + 1)]
 
-    # 303, 304-...
-    result = re.match(f"({number_group}),({number_group}) *- *({name_group}+)", group)
-    if not (result is None):
-        if group == result[0]:
-            return [(result[1], result[3]), (result[2], result[3])]
+    # '{303 - ...}{n}'
+    for i in range(4):
+        result = re.match(f"[А-Яа-яёЁ ]*({number_group}) *-* *({name_group}+)" +
+                          f"/*({number_group}) *-* *({name_group}+)" * i, group)
+        if not (result is None):
+            if group == result[0]:
+                return [(result[2 * _i + 1], result[2 * _i + 1 + 1]) for _i in range(i + 1)]
 
-    # 303 - .../303 - ...
-    result = re.match(f"({number_group}) *-* *({name_group}+)"
-                      f"/*({number_group}) *-* *({name_group}+)", group)
-    if not (result is None):
-        if group == result[0]:
-            return [(result[1], result[2]), (result[3], result[4])]
-
-    # 303 - .../303 - .../303 - ...
-    result = re.match(f"({number_group}) *-* *({name_group}+)"
-                      f"/*({number_group}) *-* *({name_group}+)"
-                      f"/*({number_group}) *-* *({name_group}+)", group)
-    if not (result is None):
-        if group == result[0]:
-            return [(result[1], result[2]), (result[3], result[4]), (result[5], result[6])]
-
-    # ОТДЕЛЕНИЕ ГЕОФИЗИКИ303 - .../303 - .../303 - ...
-    result = re.match(f"ОТДЕЛЕНИЕ ГЕОФИЗИКИ({number_group}) *-* *({name_group}+)"
-                      f"/*({number_group}) *-* *({name_group}+)"
-                      f"/*({number_group}) *-* *({name_group}+)", group)
-    if not (result is None):
-        if group == result[0]:
-            return [(result[1], result[2]), (result[3], result[4]), (result[5], result[6])]
-
-    # АСТРОНОМИЧЕСКОЕ ОТДЕЛЕНИЕ632...633...636-...
-    result = re.match(f"АСТРОНОМИЧЕСКОЕ ОТДЕЛЕНИЕ({number_group}) *-* *({name_group}+)"
-                      f"/*({number_group}) *-* *({name_group}+)"
-                      f"/*({number_group}) *-* *({name_group}+)", group)
-    if not (result is None):
-        if group == result[0]:
-            return [(result[1], result[2]), (result[3], result[4]), (result[5], result[6])]
-
-    # 101М-...101ма - МП ...101 мб МП ...143М -...
-    result = re.match(f"({number_group}) *-* *({name_group}+)"
-                      f"/*({number_group}) *-* *({name_group}+)"
-                      f"/*({number_group}) *-* *({name_group}+)"
-                      f"/*({number_group}) *-* *({name_group}+)", group)
-    if not (result is None):
-        if group == result[0]:
-            return [(result[1], result[2]), (result[3], result[4]), (result[5], result[6]), (result[7], result[8])]
-
-    _logger.warn(f"Для '{group}' не найдено подходящее регулярное выражение.")
+    _logger.warning(f"Для '{group}' не найдено подходящее регулярное выражение.")
     return [(group, "")]
 
 
@@ -117,5 +73,13 @@ def parse_group(lessons):
 
     lessons = pd.concat([lessons, pd.DataFrame(new_rows)], ignore_index=True)
     lessons["group"] = groups
-
     return lessons, list(unique_groups)
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("s")
+    args = parser.parse_args()
+    print(_parse_group(args.s))

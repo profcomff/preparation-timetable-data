@@ -1,8 +1,7 @@
+import logging
 import re
 
-from utilities import logger
-
-_logger = logger.get_logger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def _preprocessing(subject):
@@ -31,7 +30,8 @@ def _compare_groups(group1, group2):
 
 def _parse_subjects(group, subject):
     """
-    Парсит 'subjects' по заданным регулярным выражениям.
+    Парсит 'subjects' по заданным регулярным выражениям. Возвращает subject, если у группы есть такой предмет,
+    в противном случае возвращает None.
     В случае отсутствия подходящего регулярного выражения выдает предупреждение и возвращает сам 'subject'.
     """
     number_group = r"\d{3} {0,1}[А-Яа-яёЁ]*"
@@ -107,7 +107,7 @@ def _parse_subjects(group, subject):
         if subject == result[0]:
             return result[1]
 
-    _logger.warn(f"Для '{subject}' не найдено подходящее регулярное выражение.")
+    _logger.warning(f"Для '{subject}' не найдено подходящее регулярное выражение.")
     return subject
 
 
