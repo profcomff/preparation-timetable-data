@@ -1,6 +1,6 @@
 import pandas as pd
 
-def multiple_lessons(df):
+def _multiple_lessons(df):
     for (weekday, group, subject, start), sub_df in df.groupby(['weekday', 'group', 'subject', 'start']):
         if len(sub_df) > 1:
             teachers = sub_df['teacher'].values
