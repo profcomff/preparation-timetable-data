@@ -1,7 +1,7 @@
 import unittest
 import pandas as pd
 
-from fix_eng import fix_eng
+from fix_eng import multiple_lessons
 
 class Test_fix_func(unittest.TestCase):
     
