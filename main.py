@@ -9,7 +9,7 @@ lessons, groups = parse_group(lessons)
 lessons, teachers = parse_teacher(lessons)
 lessons, subjects = parse_subjects(lessons)
 
-# lessons = _multiple_lessons(lessons)
+# lessons = multiple_lessons(lessons)
 
 lessons.to_excel("lessons.xlsx")
 
