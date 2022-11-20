@@ -22,6 +22,7 @@ lessons = multiple_lessons(lessons)
 
 if args.debug:
     # TODO: Тест парсинга по изначальным данным.
+    lessons = calc_date(lessons, args.begin, args.end)
     lessons.to_excel("lessons.xlsx")
 
 # ---------------- Loading to server ----------------
