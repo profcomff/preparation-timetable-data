@@ -2,6 +2,7 @@ import urllib
 import os
 from urllib.request import urlopen
 
+
 import pandas as pd
 import requests
 from utilities import urls_api as au
@@ -36,38 +37,42 @@ def add_full_name():
 
 @retry(retry_on_exception=lambda e: isinstance(e, RequestException), wait_exponential_multiplier=1000,
        wait_exponential_max=30000, stop_max_attempt_number=30)
-def Apploading(url_post, files):
-    res = requests.post(url=url_post, files=files)
-    print('Apploading: ', res)
+def upload(url_post, files):
+    res = requests.post(url=url_post, files=files, headers=headers)
+    print('Uploading: ', res.json()['id'], " ", res)
     return res.json()['id']
+
 
 @retry(retry_on_exception=lambda e: isinstance(e, RequestException), wait_exponential_multiplier=1000,
        wait_exponential_max=30000, stop_max_attempt_number=30)
-def image(link):
+def get_image(link):
     img = urllib.request.urlopen(link).read()
     out = open("img.png", "wb")
     out.write(img)
     out.close()
-    with open('img.png', 'rb') as f:
-        data = f.read()
-    return data
+    # with open('img.png', 'rb') as f:
+    #     data = f.read()
+
+    file = {'photo': open('img.png', 'rb')}
+    return file
 
 
 @retry(retry_on_exception=lambda e: isinstance(e, RequestException), wait_exponential_multiplier=1000,
        wait_exponential_max=30000, stop_max_attempt_number=30)
-def approving(lecturer_id, photo_id):
+def approve(lecturer_id, photo_id):
     res = requests.post(
-        url=f'{url}/timetable/lecturer/{lecturer_id}/photo/{photo_id}/review/?action=Approved',
+        url=f'{url}/timetable/lecturer/{lecturer_id}/photo/{photo_id}/review/', json={'action': 'Approved'},
         headers=headers)
-    print("Approving: ", res)
+    print("Approving: ",lecturer_id, " ", photo_id, " ", res)
 
 
 @retry(retry_on_exception=lambda e: isinstance(e, RequestException), wait_exponential_multiplier=1000,
        wait_exponential_max=30000, stop_max_attempt_number=30)
-def updating(lecturer_id, photo_id):
+def update(lecturer_id, photo_id):
     res = requests.patch(url=f'{url}/timetable/lecturer/{lecturer_id}', json={"avatar_id": photo_id},
                          headers=headers)
     print(photo_id, "Updating: ", res)
+    print('\n')
 
 
 def add_photos():
@@ -77,18 +82,30 @@ def add_photos():
         for i, row1 in prepods.iterrows():
             if row['last_name'] == row1['last_name'] and row['first_name'][0] == row1['first_name'][0] and row['last_name'][0] == row1['last_name'][0]:
                 if not pd.isna(row1['photo_link']):
+
                     lecturer_id = row['id']
-                    data = image(row1['photo_link'])
+
+                    files = get_image(row1['photo_link'])
 
                     if os.stat('img.png').st_size >= 3000000:
+                        print("big photo")
                         break
 
                     url_post = f'{url}/timetable/lecturer/{lecturer_id}/photo'
-                    files = {"photo": data}
-                    photo_id = Apploading(url_post, files)
-
-                    approving(lecturer_id, photo_id)
-                    updating(lecturer_id, photo_id)
+                    photo_id = upload(url_post, files)
+                    approve(lecturer_id, photo_id)
+                    update(lecturer_id, photo_id)
+                    # data = image(row1['photo_link'])
+                    #
+                    # if os.stat('img.png').st_size >= 3000000:
+                    #     break
+                    #
+                    # url_post = f'{url}/timetable/lecturer/{lecturer_id}/photo'
+                    # files = {"photo": data}
+                    # photo_id = Apploading(url_post, files)
+                    #
+                    # approving(lecturer_id, photo_id)
+                    # updating(lecturer_id, photo_id)
                     break
 
 
@@ -123,3 +140,17 @@ def prepods_comment():
                     res = requests.patch(url=url_patch_lecturer + str(row['id']), json={"description": text}, headers=headers)
                     print(res.json())
 
+
+add_photos()
+# lecturer_id = 3624
+# root = 'https://timetable.api.test.profcomff.com'
+#
+# img = urllib.request.urlopen('https://phys.msu.ru/upload/iblock/ae9/5.jpg').read()
+# out = open("img.png", "wb")
+# out.write(img)
+# out.close()
+#
+# file = {'photo': open('img.png', 'rb')}
+#
+# x = requests.post(url=f'{root}/timetable/lecturer/{lecturer_id}/photo', files = file, headers = headers)
+# print(x)

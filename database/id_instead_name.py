@@ -1,15 +1,20 @@
+import logging
+
 import requests
 
 from utilities import urls_api as au
 import password
 
-# au.authorization(password.login, password.password)
-url = au.get_url()
-beaver = requests.post(f"{url}/token", {"username": password.login, "password": password.password})
-access_token = beaver.json().get("access_token")
-headers = {"Authorization": f"Bearer {access_token}"}
+# # au.authorization(password.login, password.password)
+# url = au.get_url()
+# beaver = requests.post(f"{url}/token", {"username": password.login, "password": password.password})
+# access_token = beaver.json().get("access_token")
+# headers = {"Authorization": f"Bearer {access_token}"}
 
-def room_to_id(lessons):
+_logger = logging.getLogger(__name__)
+
+
+def room_to_id(lessons, headers):
     response = requests.get(au.get_url_room(au.MODES_URL.get), headers=headers)
     rooms = response.json()["items"]
 
@@ -24,7 +29,7 @@ def room_to_id(lessons):
     return lessons
 
 
-def group_to_id(lessons):
+def group_to_id(lessons, headers):
     response = requests.get(au.get_url_group(au.MODES_URL.get), headers=headers)
     groups = response.json()["items"]
 
@@ -38,7 +43,7 @@ def group_to_id(lessons):
     return lessons
 
 
-def teacher_to_id(lessons):
+def teacher_to_id(lessons, headers):
     response = requests.get(au.get_url_lecturer(au.MODES_URL.get), headers=headers)
     teachers = response.json()["items"]
 
@@ -60,8 +65,8 @@ def teacher_to_id(lessons):
     return lessons
 
 
-def to_id(lessons):
-    lessons = room_to_id(lessons)
-    lessons = group_to_id(lessons)
-    lessons = teacher_to_id(lessons)
+def to_id(lessons, headers):
+    lessons = room_to_id(lessons, headers)
+    lessons = group_to_id(lessons, headers)
+    lessons = teacher_to_id(lessons, headers)
     return lessons
