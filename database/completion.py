@@ -1,23 +1,29 @@
+import logging
+
 import pandas as pd
 import requests
 import json
+# import password_alch
+from sqlalchemy import create_engine
 
 import authorization as au
 import password
 
-# au.authorization(password.login, password.password)
-url = au.get_url()
-beaver = requests.post(f"{url}/token", {"username": password.login, "password": password.password})
-auth_data = json.loads(beaver.content)
-access_token = beaver.json().get("access_token")
-headers = {"Authorization": f"Bearer {access_token}"}
+# # au.authorization(password.login, password.password)
+# url = au.get_url()
+# beaver = requests.post(f"{url}/token", {"username": arg, "password": password.password})
+# auth_data = json.loads(beaver.content)
+# access_token = beaver.json().get("access_token")
+# headers = {"Authorization": f"Bearer {access_token}"}
+
+_logger = logging.getLogger(__name__)
 
 
-def completion_lecturers(new_lecturers):
+def completion_lecturers(new_lecturers, headers):
     response = requests.get(au.get_url_lecturer(au.MODES_URL.get), headers=headers)
-    print(au.get_url_lecturer(au.MODES_URL.get))
-    print(response.json())
-    print(headers)
+    #print(au.get_url_lecturer(au.MODES_URL.get))
+    #print(response.json())
+    #print(headers)
     old_lecturers = response.json()["items"]
     new_lecturers = list(map(lambda x: x.split(), new_lecturers))
 
@@ -39,10 +45,10 @@ def completion_lecturers(new_lecturers):
             requests.post(au.get_url_lecturer(au.MODES_URL.post), json=data, headers=headers)
 
 
-def completion_rooms(new_rooms):
-    print("COMPLETION_ROOMS", headers)
+def completion_rooms(new_rooms, headers):
+    #print("COMPLETION_ROOMS", headers)
     response = requests.get(au.get_url_room(au.MODES_URL.get), headers=headers)
-    print(response)
+    #print(response)
     old_rooms = response.json()["items"]
 
     b = False
@@ -57,13 +63,13 @@ def completion_rooms(new_rooms):
             if pd.notna(name):
                 data = {'name': name, 'direction': None}
                 r = requests.post(au.get_url_room(au.MODES_URL.post), json=data, headers=headers)
-                print(name, r)
+                _logger.debug(r.json())
+                #print(name, r)
 
 
-def completion_groups(new_groups):
+def completion_groups(new_groups, headers):
     response = requests.get(au.get_url_group(au.MODES_URL.get), headers=headers)
     old_groups = response.json()["items"]
-
 
     # print(new_groups)
     b = False
@@ -79,3 +85,7 @@ def completion_groups(new_groups):
             name = new_group[1]
             data = {'name': name, 'number': number}
             requests.post(au.get_url_group(au.MODES_URL.post), json=data, headers=headers)
+
+
+# engine = create_engine(
+#     f"postgresql+psycopg2://{password_alch.login}:{password_alch.password}@db.profcomff.com:25432/dev")
