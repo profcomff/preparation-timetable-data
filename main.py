@@ -18,7 +18,7 @@ lessons, groups = parse_group(lessons)
 lessons, teachers = parse_teacher(lessons)
 lessons, subjects = parse_subjects(lessons)
 
-# lessons = fix_eng(lessons)
+# lessons = multiple_lessons(lessons)
 
 if args.debug:
     # TODO: Тест парсинга по изначальным данным.
