@@ -17,15 +17,3 @@ def get_parser():
                         help="end of semester (default: 09/18/2022) "
                              "(WARNING: value must be in same format as default argument)")
     return parser
-
-
-def get_url_engine(args):
-    """
-    Return the url for the alchemy engine.
-    >>> get_url_engine(get_parser().parse_args("login password -db=test".split()))
-    'postgresql+psycopg2://login:password@db.profcomff.com:25432/test'
-
-    :param args: Args from parser from 'get_parser' (see above).
-    """
-    return f"postgresql+psycopg2://{args.login}:{args.password}@db.profcomff.com:25432/{args.database}"
-
