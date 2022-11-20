@@ -1,8 +1,7 @@
 import requests
 
-import authorization as au
+from utilities import urls_api as au
 import password
-from authorization import get_url
 
 # au.authorization(password.login, password.password)
 url = au.get_url()

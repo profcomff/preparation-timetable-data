@@ -1,7 +1,6 @@
 import requests
-import json
 
-import authorization as au
+from utilities import urls_api as au
 import password
 
 headers = {}

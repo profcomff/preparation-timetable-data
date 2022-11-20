@@ -1,9 +1,8 @@
-import pandas as pd
 import requests
 
 from retrying import retry
 from requests.exceptions import RequestException
-import authorization as au
+from utilities import urls_api as au
 import password
 
 headers = {}

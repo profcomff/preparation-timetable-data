@@ -1,30 +1,7 @@
 import enum
 
-import requests
-
-# url = get_url()
-# beaver = requests.post(f"{url}/token", {"username": login, "password": password})
-# access_token = beaver.json().get("access_token")
-# _headers = {"Authorization": f"Bearer {access_token}"}
-#
-#
-# def get_headers():
-#     return _headers
-
-
-def authorization(login, password):
-    url = get_url()
-    beaver = requests.post(f"{url}/token", {"username": login, "password": password})
-    access_token = beaver.json().get("access_token")
-    _headers = {"Authorization": f"Bearer {access_token}"}
-
-
 MODES = enum.Enum("Modes", "test prod")
 mode = MODES.test
-
-
-# MODES_URL = enum.Enum("Modes", "get_room get_group get_lecturer delete_room delete_group delete_lecturer event
-# patch_lecturer")
 
 MODES_URL = enum.Enum("Modes", "get delete post patch")
 
@@ -83,4 +60,3 @@ def get_url():
         return PROD_URL
     else:
         return TEST_URL
-

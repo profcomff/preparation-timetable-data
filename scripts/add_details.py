@@ -1,11 +1,10 @@
-import json
 import urllib
 import os
 from urllib.request import urlopen
 
 import pandas as pd
 import requests
-import authorization as au
+from utilities import urls_api as au
 import password
 from requests.exceptions import RequestException
 from retrying import retry
