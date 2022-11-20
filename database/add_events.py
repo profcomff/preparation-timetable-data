@@ -3,14 +3,6 @@ import requests
 from retrying import retry
 from requests.exceptions import RequestException
 from utilities import urls_api as au
-import password
-
-# headers = {}
-# # au.authorization(password.login, password.password)
-# url = au.get_url()
-# beaver = requests.post(f"{url}/token", {"username": password.login, "password": password.password})
-# access_token = beaver.json().get("access_token")
-# headers = {"Authorization": f"Bearer {access_token}"}
 
 
 @retry(retry_on_exception=lambda e: isinstance(e, RequestException), wait_exponential_multiplier=1000,
@@ -18,7 +10,7 @@ import password
 def add_lessons(lessons, headers):
     for i, row in lessons.iterrows():
         name = row['subject']
-        room_id = row['place']#[int(row['place'])] if not pd.isna(row["place"]) else []
+        room_id = row['place']
         group_id = int(row['group'])
         lecturer_id = row['teacher'] if isinstance(row["teacher"], list) else []
         start = row['start']

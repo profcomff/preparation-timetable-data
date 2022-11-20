@@ -3,17 +3,15 @@ import logging
 import pandas as pd
 import requests
 
-from utilities import urls_api as au
+from utilities import urls_api
 
 _logger = logging.getLogger(__name__)
 
 
 def completion_lecturers(new_lecturers, headers):
     _logger.info("Дополнение лекторов")
-    response = requests.get(au.get_url_lecturer(au.MODES_URL.get), headers=headers)
-    # print(au.get_url_lecturer(au.MODES_URL.get))
-    # print(response.json())
-    # print(headers)
+
+    response = requests.get(urls_api.get_url_lecturer(urls_api.MODES_URL.get), headers=headers)
     old_lecturers = response.json()["items"]
     new_lecturers = list(map(lambda x: x.split(), new_lecturers))
 
@@ -32,15 +30,14 @@ def completion_lecturers(new_lecturers, headers):
             first_name = new_lecturer[1]
             middle_name = new_lecturer[2]
             data = {'first_name': first_name, 'middle_name': middle_name, 'last_name': last_name}
-            r = requests.post(au.get_url_lecturer(au.MODES_URL.post), json=data, headers=headers)
+            r = requests.post(urls_api.get_url_lecturer(urls_api.MODES_URL.post), json=data, headers=headers)
             _logger.debug(r.json())
 
 
 def completion_rooms(new_rooms, headers):
     _logger.info("Дополнение аудиторий")
-    # print("COMPLETION_ROOMS", headers)
-    response = requests.get(au.get_url_room(au.MODES_URL.get), headers=headers)
-    # print(response)
+
+    response = requests.get(urls_api.get_url_room(urls_api.MODES_URL.get), headers=headers)
     old_rooms = response.json()["items"]
 
     b = False
@@ -54,28 +51,26 @@ def completion_rooms(new_rooms, headers):
             name = new_room
             if pd.notna(name):
                 data = {'name': name, 'direction': None}
-                r = requests.post(au.get_url_room(au.MODES_URL.post), json=data, headers=headers)
-                _logger.debug(r.json())
-                # print(name, r)
+                response = requests.post(urls_api.get_url_room(urls_api.MODES_URL.post), json=data, headers=headers)
+                _logger.debug(response.json())
 
 
 def completion_groups(new_groups, headers):
     _logger.info("Дополнение групп")
-    response = requests.get(au.get_url_group(au.MODES_URL.get), headers=headers)
+
+    response = requests.get(urls_api.get_url_group(urls_api.MODES_URL.get), headers=headers)
     old_groups = response.json()["items"]
 
-    # print(new_groups)
     b = False
     for new_group in new_groups:
         for old_group in old_groups:
             b = new_group[0] == old_group['number']
             if b:
-                # print(old_group['number'])
                 break
 
         if not b:
             number = new_group[0]
             name = new_group[1]
             data = {'name': name, 'number': number}
-            r = requests.post(au.get_url_group(au.MODES_URL.post), json=data, headers=headers)
-            _logger.debug(r.json())
+            response = requests.post(urls_api.get_url_group(urls_api.MODES_URL.post), json=data, headers=headers)
+            _logger.debug(response.json())
