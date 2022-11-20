@@ -15,18 +15,18 @@ def _get_file_handler():
     return file_handler
 
 
-def _get_stream_handler():
+def _get_stream_handler(console_log_level):
     """Потоковый обработчик."""
     stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(logging.INFO)
+    stream_handler.setLevel(console_log_level)
     stream_handler.setFormatter(logging.Formatter(_log_stream_format))
     return stream_handler
 
 
-def get_root_logger():
+def get_root_logger(console_log_level=logging.INFO):
     """Создает логгер."""
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     logger.addHandler(_get_file_handler())
-    logger.addHandler(_get_stream_handler())
+    logger.addHandler(_get_stream_handler(console_log_level))
     return logger
