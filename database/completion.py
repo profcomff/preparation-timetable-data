@@ -9,6 +9,7 @@ _logger = logging.getLogger(__name__)
 
 
 def completion_lecturers(new_lecturers, headers):
+    _logger.info("Дополнение лекторов")
     response = requests.get(au.get_url_lecturer(au.MODES_URL.get), headers=headers)
     # print(au.get_url_lecturer(au.MODES_URL.get))
     # print(response.json())
@@ -31,10 +32,12 @@ def completion_lecturers(new_lecturers, headers):
             first_name = new_lecturer[1]
             middle_name = new_lecturer[2]
             data = {'first_name': first_name, 'middle_name': middle_name, 'last_name': last_name}
-            requests.post(au.get_url_lecturer(au.MODES_URL.post), json=data, headers=headers)
+            r = requests.post(au.get_url_lecturer(au.MODES_URL.post), json=data, headers=headers)
+            _logger.debug(r.json())
 
 
 def completion_rooms(new_rooms, headers):
+    _logger.info("Дополнение аудиторий")
     # print("COMPLETION_ROOMS", headers)
     response = requests.get(au.get_url_room(au.MODES_URL.get), headers=headers)
     # print(response)
@@ -57,6 +60,7 @@ def completion_rooms(new_rooms, headers):
 
 
 def completion_groups(new_groups, headers):
+    _logger.info("Дополнение групп")
     response = requests.get(au.get_url_group(au.MODES_URL.get), headers=headers)
     old_groups = response.json()["items"]
 
@@ -73,5 +77,5 @@ def completion_groups(new_groups, headers):
             number = new_group[0]
             name = new_group[1]
             data = {'name': name, 'number': number}
-            requests.post(au.get_url_group(au.MODES_URL.post), json=data, headers=headers)
-
+            r = requests.post(au.get_url_group(au.MODES_URL.post), json=data, headers=headers)
+            _logger.debug(r.json())
