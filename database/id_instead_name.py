@@ -1,4 +1,5 @@
 import logging
+import sys
 
 import requests
 
@@ -20,12 +21,17 @@ def room_to_id(lessons, headers):
 
     place = lessons["place"].tolist()
     for i, row in lessons.iterrows():
-        for room in rooms:
-            if row["place"] == room["name"]:
-                place[i] = room["id"]
-                break
+        for k, ob in enumerate(row["place"]):
+            b = False
+            for room in rooms:
+                if ob == room["name"]:
+                    place[i][k] = room["id"]
+                    b = True
+                    break
+            if not b:
+                _logger.critical("Ошибка, аудитория {aud} не найдена. Завершение работы".format(aud = row['place']))
+                sys.exit()
     lessons["place"] = place
-
     return lessons
 
 
@@ -35,10 +41,15 @@ def group_to_id(lessons, headers):
 
     new_groups = lessons["group"].tolist()
     for i, row in lessons.iterrows():
+        b = False
         for group in groups:
             if row["group"] == group["number"]:
                 new_groups[i] = group["id"]
+                b = True
                 break
+        if not b:
+            _logger.critical("Ошибка, группа {group} не найдена. Завершение работы".format(group = row["group"]))
+            sys.exit()
     lessons["group"] = new_groups
     return lessons
 
@@ -49,17 +60,22 @@ def teacher_to_id(lessons, headers):
 
     new_teacher = lessons["teacher"].tolist()
     for i, row in lessons.iterrows():
-        if isinstance(row["teacher"], list):
+        # if isinstance(row["teacher"], list):
+        for j, item in enumerate(row["teacher"]):
+            b = False
             for teacher in teachers:
-                for j, item in enumerate(row["teacher"]):
-                    if isinstance(item, str):
-                        item = item.split()
-                        b1 = item[0] == teacher['last_name']
-                        b2 = item[1][0] == teacher['first_name'][0]
-                        b3 = item[2][0] == teacher['middle_name'][0]
-                        b = b1 and b2 and b3
-                        if b:
-                            new_teacher[i][j] = teacher["id"]
+                if isinstance(item, str):
+                    item = item.split()
+                    b1 = item[0] == teacher['last_name']
+                    b2 = item[1][0] == teacher['first_name'][0]
+                    b3 = item[2][0] == teacher['middle_name'][0]
+                    b = b1 and b2 and b3
+                    if b:
+                        new_teacher[i][j] = teacher["id"]
+                        break
+            if not b:
+                _logger.critical("Ошибка, препод {prep} не найден. Завершение работы".format(prep=item))
+                sys.exit()
     lessons["teacher"] = new_teacher
 
     return lessons
