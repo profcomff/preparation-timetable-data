@@ -31,6 +31,7 @@ lessons, teachers = parse_teacher(lessons)
 lessons, subjects = parse_subjects(lessons)
 
 lessons = multiple_lessons(lessons)
+lessons = flatten(lessons)
 
 # ---------------- Loading to server ----------------
 completion_lecturers(teachers, headers)

@@ -5,13 +5,13 @@ import pandas as pd
 _logger = logging.getLogger(__name__)
 
 
-def multiple_lessons(df):
+def multiple_lessons(lessons):
     """
     Соединяет пары, у которых одинаковые ['weekday', 'group', 'subject', 'start'], в одну строчку.
     """
     _logger.info("Начинаю соединять одинаковые пары...")
 
-    for (_, _, _, _), sub_df in df.groupby(['weekday', 'group', 'subject', 'start']):
+    for (_, _, _, _), sub_df in lessons.groupby(['weekday', 'group', 'subject', 'start']):
         if len(sub_df) > 1:
             teachers = sub_df['teacher'].values
             places = sub_df['place'].values
@@ -20,10 +20,10 @@ def multiple_lessons(df):
             new_df['place'] = list(places)
 
             indexes = sub_df.index
-            df.drop(indexes, axis=0, inplace=True)
-            df.loc[len(df) + 1] = new_df
+            lessons.drop(indexes, axis=0, inplace=True)
+            lessons.loc[len(lessons) + 1] = new_df
 
-    indexes_for_new_df = pd.Series(list(range(len(df))))
-    df.set_index(indexes_for_new_df, inplace=True)
+    indexes_for_new_df = pd.Series(list(range(len(lessons))))
+    lessons.set_index(indexes_for_new_df, inplace=True)
 
-    return df
+    return lessons
