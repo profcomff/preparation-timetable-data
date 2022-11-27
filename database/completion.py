@@ -9,7 +9,10 @@ _logger = logging.getLogger(__name__)
 
 
 def completion_lecturers(new_lecturers, headers):
-    _logger.info("Дополнение лекторов")
+    """
+    Добавляет лекторов в базу данных, которые появляются при парсинге, но в данный момент отсутсвуют в базе.
+    """
+    _logger.info("Дополняю лекторов...")
 
     response = requests.get(urls_api.get_url_lecturer(urls_api.MODES_URL.get), headers=headers)
     old_lecturers = response.json()["items"]
@@ -35,7 +38,10 @@ def completion_lecturers(new_lecturers, headers):
 
 
 def completion_rooms(new_rooms, headers):
-    _logger.info("Дополнение аудиторий")
+    """
+    Добавляет аудитории в базу данных, которые появляются при парсинге, но в данный момент отсутсвуют в базе.
+    """
+    _logger.info("Дополненяю аудитории...")
 
     response = requests.get(urls_api.get_url_room(urls_api.MODES_URL.get), headers=headers)
     old_rooms = response.json()["items"]
@@ -56,7 +62,10 @@ def completion_rooms(new_rooms, headers):
 
 
 def completion_groups(new_groups, headers):
-    _logger.info("Дополнение групп")
+    """
+    Добавляет группы в базу данных, которые появляются при парсинге, но в данный момент отсутсвуют в базе.
+    """
+    _logger.info("Дополненяю группы")
 
     response = requests.get(urls_api.get_url_group(urls_api.MODES_URL.get), headers=headers)
     old_groups = response.json()["items"]

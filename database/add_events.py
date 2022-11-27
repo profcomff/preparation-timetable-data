@@ -10,9 +10,9 @@ from utilities import urls_api as au
 def add_lessons(lessons, headers):
     for i, row in lessons.iterrows():
         name = row['subject']
-        room_id = row['place']#[int(row['place'])] if not pd.isna(row["place"]) else []
+        room_id = row['place']
         group_id = int(row['group'])
-        lecturer_id = row['teacher'] if isinstance(row["teacher"], list) else []
+        lecturer_id = row['teacher']
         start = row['start']
         end = row['end']
         event = {

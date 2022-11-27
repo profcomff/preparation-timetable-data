@@ -3,13 +3,18 @@ import sys
 
 import requests
 
-from utilities import urls_api as au
+from utilities import urls_api
 
 _logger = logging.getLogger(__name__)
 
 
 def room_to_id(lessons, headers):
-    response = requests.get(au.get_url_room(au.MODES_URL.get), headers=headers)
+    """
+    Превращает названия комнат в расписании в id для базы данных.
+    """
+    _logger.info("Вревращаю названия комнат в id...")
+
+    response = requests.get(urls_api.get_url_room(urls_api.MODES_URL.get), headers=headers)
     rooms = response.json()["items"]
 
     place = lessons["place"].tolist()
@@ -22,14 +27,19 @@ def room_to_id(lessons, headers):
                     b = True
                     break
             if not b:
-                _logger.critical("Ошибка, аудитория {aud} не найдена. Завершение работы".format(aud=row['place']))
+                _logger.critical("Ошибка, аудитория '{aud}' не найдена. Завершение работы".format(aud=row['place']))
                 sys.exit()
     lessons["place"] = place
     return lessons
 
 
 def group_to_id(lessons, headers):
-    response = requests.get(au.get_url_group(au.MODES_URL.get), headers=headers)
+    """
+    Превращает названия групп в расписании в id для базы данных.
+    """
+    _logger.info("Вревращаю названия групп в id...")
+
+    response = requests.get(urls_api.get_url_group(urls_api.MODES_URL.get), headers=headers)
     groups = response.json()["items"]
 
     new_groups = lessons["group"].tolist()
@@ -41,14 +51,19 @@ def group_to_id(lessons, headers):
                 b = True
                 break
         if not b:
-            _logger.critical("Ошибка, группа {group} не найдена. Завершение работы".format(group=row["group"]))
+            _logger.critical("Ошибка, группа '{group}' не найдена. Завершение работы".format(group=row["group"]))
             sys.exit()
     lessons["group"] = new_groups
     return lessons
 
 
 def teacher_to_id(lessons, headers):
-    response = requests.get(au.get_url_lecturer(au.MODES_URL.get), headers=headers)
+    """
+    Превращает препов в расписании в id для базы данных.
+    """
+    _logger.info("Превращаю препов в id...")
+
+    response = requests.get(urls_api.get_url_lecturer(urls_api.MODES_URL.get), headers=headers)
     teachers = response.json()["items"]
 
     new_teacher = lessons["teacher"].tolist()
