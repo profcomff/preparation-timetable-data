@@ -41,7 +41,7 @@ def completion_rooms(new_rooms, headers):
     """
     Добавляет аудитории в базу данных, которые появляются при парсинге, но в данный момент отсутсвуют в базе.
     """
-    _logger.info("Дополненяю аудитории...")
+    _logger.info("Дополняю аудитории...")
 
     response = requests.get(urls_api.get_url_room(urls_api.MODES_URL.get), headers=headers)
     old_rooms = response.json()["items"]
@@ -65,7 +65,7 @@ def completion_groups(new_groups, headers):
     """
     Добавляет группы в базу данных, которые появляются при парсинге, но в данный момент отсутсвуют в базе.
     """
-    _logger.info("Дополненяю группы")
+    _logger.info("Дополняю группы...")
 
     response = requests.get(urls_api.get_url_group(urls_api.MODES_URL.get), headers=headers)
     old_groups = response.json()["items"]

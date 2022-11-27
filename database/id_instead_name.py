@@ -12,7 +12,7 @@ def room_to_id(lessons, headers):
     """
     Превращает названия комнат в расписании в id для базы данных.
     """
-    _logger.info("Вревращаю названия комнат в id...")
+    _logger.info("Превращаю названия комнат в id...")
 
     response = requests.get(urls_api.get_url_room(urls_api.MODES_URL.get), headers=headers)
     rooms = response.json()["items"]
@@ -37,7 +37,7 @@ def group_to_id(lessons, headers):
     """
     Превращает названия групп в расписании в id для базы данных.
     """
-    _logger.info("Вревращаю названия групп в id...")
+    _logger.info("Превращаю названия групп в id...")
 
     response = requests.get(urls_api.get_url_group(urls_api.MODES_URL.get), headers=headers)
     groups = response.json()["items"]
@@ -61,7 +61,7 @@ def teacher_to_id(lessons, headers):
     """
     Превращает препов в расписании в id для базы данных.
     """
-    _logger.info("Превращаю препов в id...")
+    _logger.info("Превращаю преподавателей в id...")
 
     response = requests.get(urls_api.get_url_lecturer(urls_api.MODES_URL.get), headers=headers)
     teachers = response.json()["items"]
@@ -80,7 +80,7 @@ def teacher_to_id(lessons, headers):
                     new_teacher[i][j] = teacher["id"]
                     break
             if not b:
-                _logger.critical("Ошибка, препод {prep} не найден. Завершение работы".format(prep=item_))
+                _logger.critical("Ошибка, преподаватель '{prep}' не найден. Завершение работы".format(prep=item_))
                 sys.exit()
     lessons["teacher"] = new_teacher
 
