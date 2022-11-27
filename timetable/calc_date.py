@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 def calc_date(lessons, semester_begin, semester_end):
     """
-    Рассчитывет дату всех пар.
+    Рассчитывает дату всех пар.
     """
     _logger.info("Рассчитываю даты...")
 
