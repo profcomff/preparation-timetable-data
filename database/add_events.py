@@ -3,14 +3,6 @@ import requests
 from retrying import retry
 from requests.exceptions import RequestException
 from utilities import urls_api as au
-import password
-
-# headers = {}
-# # au.authorization(password.login, password.password)
-# url = au.get_url()
-# beaver = requests.post(f"{url}/token", {"username": password.login, "password": password.password})
-# access_token = beaver.json().get("access_token")
-# headers = {"Authorization": f"Bearer {access_token}"}
 
 
 @retry(retry_on_exception=lambda e: isinstance(e, RequestException), wait_exponential_multiplier=1000,

@@ -7,7 +7,10 @@ _logger = logging.getLogger(__name__)
 
 def _to_list(value):
     if isinstance(value, list):
-        return value
+        result = []
+        for item in value:
+            result += _to_list(item)
+        return result
 
     if value is None:
         return []
