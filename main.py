@@ -39,7 +39,10 @@ completion_rooms(places, headers)
 completion_groups(groups, headers)
 
 lessons = to_id(lessons, headers)
-lessons.to_excel("lessons.xlsx", "1")
-# lessons = calc_date(lessons, args.begin, args.end)
-#
-# events.add_lessons(lessons, headers)
+lessons = calc_date(lessons, args.begin, args.end)
+
+delete_lessons(headers)
+add_lessons(lessons, headers)
+
+input("Готово. Для продолжения нажмите любую клавишу.")
+
