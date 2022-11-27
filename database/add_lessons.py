@@ -11,6 +11,10 @@ _logger = logging.getLogger(__name__)
 
 @retry(retry_on_exception=lambda e: isinstance(e, RequestException), wait_exponential_multiplier=1000,
        wait_exponential_max=30000, stop_max_attempt_number=30)
+def upload_event(event, headers):
+    requests.post(urls_api.get_url_event(urls_api.MODES_URL.post), json=event, headers=headers)
+
+
 def add_lessons(lessons, headers):
     """
     Загружает все пары в базу данных.
@@ -26,4 +30,5 @@ def add_lessons(lessons, headers):
             "start_ts": row['start'],
             "end_ts": row['end']
         }
-        requests.post(urls_api.get_url_event(urls_api.MODES_URL.post), json=event, headers=headers)
+        upload_event(event, headers)
+
