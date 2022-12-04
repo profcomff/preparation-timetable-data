@@ -42,7 +42,7 @@ completion_groups(groups, headers, base)
 lessons = to_id(lessons, headers, base)
 lessons = calc_date(lessons, args.begin, args.end)
 
-#delete_lessons(headers)
+delete_lessons(headers)
 add_lessons(lessons, headers, base)
 
 input("Готово. Для продолжения нажмите любую клавишу.")

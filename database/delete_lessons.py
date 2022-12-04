@@ -16,6 +16,7 @@ def delete_lessons(headers, start, end, base):
     """
     Удаляет все пары из базы данных.
     """
+    _logger.info("Удаляю пары из базы данных... ")
     start = datetime.datetime.strptime(start, "%m/%d/%Y")
     end = datetime.datetime.strptime(end, "%m/%d/%Y")
 
@@ -27,4 +28,3 @@ def delete_lessons(headers, start, end, base):
 
     r = requests.delete(url_delete_events, json=events, headers=headers)
     _logger.debug(r.json())
-    _logger.info("Удаляю пары из базы данных...")
