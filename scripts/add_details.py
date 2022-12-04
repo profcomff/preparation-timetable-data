@@ -50,8 +50,6 @@ def get_image(link):
     out = open("img.png", "wb")
     out.write(img)
     out.close()
-    # with open('img.png', 'rb') as f:
-    #     data = f.read()
 
     file = {'photo': open('img.png', 'rb')}
     return file
@@ -95,17 +93,6 @@ def add_photos():
                     photo_id = upload(url_post, files)
                     approve(lecturer_id, photo_id)
                     update(lecturer_id, photo_id)
-                    # data = image(row1['photo_link'])
-                    #
-                    # if os.stat('img.png').st_size >= 3000000:
-                    #     break
-                    #
-                    # url_post = f'{url}/timetable/lecturer/{lecturer_id}/photo'
-                    # files = {"photo": data}
-                    # photo_id = Apploading(url_post, files)
-                    #
-                    # approving(lecturer_id, photo_id)
-                    # updating(lecturer_id, photo_id)
                     break
 
 
@@ -142,15 +129,3 @@ def prepods_comment():
 
 
 add_photos()
-# lecturer_id = 3624
-# root = 'https://timetable.api.test.profcomff.com'
-#
-# img = urllib.request.urlopen('https://phys.msu.ru/upload/iblock/ae9/5.jpg').read()
-# out = open("img.png", "wb")
-# out.write(img)
-# out.close()
-#
-# file = {'photo': open('img.png', 'rb')}
-#
-# x = requests.post(url=f'{root}/timetable/lecturer/{lecturer_id}/photo', files = file, headers = headers)
-# print(x)

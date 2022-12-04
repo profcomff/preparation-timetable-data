@@ -8,13 +8,13 @@ from utilities import urls_api
 _logger = logging.getLogger(__name__)
 
 
-def room_to_id(lessons, headers):
+def room_to_id(lessons, headers, base):
     """
     Превращает названия комнат в расписании в id для базы данных.
     """
     _logger.info("Превращаю названия комнат в id...")
 
-    response = requests.get(urls_api.get_url_room(urls_api.MODES_URL.get), headers=headers)
+    response = requests.get(urls_api.get_url_room(urls_api.MODES_URL.get, base), headers=headers)
     rooms = response.json()["items"]
 
     place = lessons["place"].tolist()
@@ -33,13 +33,13 @@ def room_to_id(lessons, headers):
     return lessons
 
 
-def group_to_id(lessons, headers):
+def group_to_id(lessons, headers, base):
     """
     Превращает названия групп в расписании в id для базы данных.
     """
     _logger.info("Превращаю названия групп в id...")
 
-    response = requests.get(urls_api.get_url_group(urls_api.MODES_URL.get), headers=headers)
+    response = requests.get(urls_api.get_url_group(urls_api.MODES_URL.get, base), headers=headers)
     groups = response.json()["items"]
 
     new_groups = lessons["group"].tolist()
@@ -57,13 +57,13 @@ def group_to_id(lessons, headers):
     return lessons
 
 
-def teacher_to_id(lessons, headers):
+def teacher_to_id(lessons, headers, base):
     """
     Превращает препов в расписании в id для базы данных.
     """
     _logger.info("Превращаю преподавателей в id...")
 
-    response = requests.get(urls_api.get_url_lecturer(urls_api.MODES_URL.get), headers=headers)
+    response = requests.get(urls_api.get_url_lecturer(urls_api.MODES_URL.get, base), headers=headers)
     teachers = response.json()["items"]
 
     new_teacher = lessons["teacher"].tolist()
@@ -87,8 +87,8 @@ def teacher_to_id(lessons, headers):
     return lessons
 
 
-def to_id(lessons, headers):
-    lessons = room_to_id(lessons, headers)
-    lessons = group_to_id(lessons, headers)
-    lessons = teacher_to_id(lessons, headers)
+def to_id(lessons, headers, base):
+    lessons = room_to_id(lessons, headers, base)
+    lessons = group_to_id(lessons, headers, base)
+    lessons = teacher_to_id(lessons, headers, base)
     return lessons

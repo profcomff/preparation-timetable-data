@@ -1,62 +1,62 @@
 import enum
 
-MODES = enum.Enum("Modes", "test prod")
-mode = MODES.test
+# MODES = enum.Enum("Modes", "test prod")
+# mode = MODES.test
+
 
 MODES_URL = enum.Enum("Modes", "get delete post patch")
 
 
-def get_url_room(mode_):
+def get_url_room(mode_, base):
     if mode_ == MODES_URL.get:
-        return get_url() + "/timetable/room/?limit=1000&offset=0"
+        return get_url(base) + "/timetable/room/?limit=1000&offset=0"
     if mode_ == MODES_URL.delete:
-        return get_url() + '/timetable/room/'
+        return get_url(base) + '/timetable/room/'
     if mode_ == MODES_URL.post:
-        print("yes")
-        return get_url() + '/timetable/room/'
+        return get_url(base) + '/timetable/room/'
     if mode_ == MODES_URL.patch:
-        return get_url() + '/timetable/room/'
+        return get_url(base) + '/timetable/room/'
 
 
-def get_url_group(mode_):
+def get_url_group(mode_, base):
     if mode_ == MODES_URL.get:
-        return get_url() + "/timetable/group/?limit=1000&offset=0"
+        return get_url(base) + "/timetable/group/?limit=1000&offset=0"
     if mode_ == MODES_URL.delete:
-        return get_url() + '/timetable/group/'
+        return get_url(base) + '/timetable/group/'
     if mode_ == MODES_URL.post:
-        return get_url() + '/timetable/group/'
+        return get_url(base) + '/timetable/group/'
     if mode_ == MODES_URL.patch:
-        return get_url() + '/timetable/group/'
+        return get_url(base) + '/timetable/group/'
 
 
-def get_url_lecturer(mode_):
+def get_url_lecturer(mode_, base):
     if mode_ == MODES_URL.get:
-        return get_url() + "/timetable/lecturer/?limit=1000&offset=0"
+        return get_url(base) + "/timetable/lecturer/?limit=1000&offset=0"
     if mode_ == MODES_URL.delete:
-        return get_url() + '/timetable/lecturer/'
+        return get_url(base) + '/timetable/lecturer/'
     if mode_ == MODES_URL.post:
-        return get_url() + '/timetable/lecturer/'
+        return get_url(base) + '/timetable/lecturer/'
     if mode_ == MODES_URL.patch:
-        return get_url() + '/timetable/lecturer/'
+        return get_url(base) + '/timetable/lecturer/'
 
 
-def get_url_event(mode_):
+def get_url_event(mode_, base):
     if mode_ == MODES_URL.get:
-        return get_url() + "/timetable/event/"
+        return get_url(base) + "/timetable/event/"
     if mode_ == MODES_URL.delete:
-        return get_url() + '/timetable/event/'
+        return get_url(base) + '/timetable/event/'
     if mode_ == MODES_URL.post:
-        return get_url() + '/timetable/event/'
+        return get_url(base) + '/timetable/event/'
     if mode_ == MODES_URL.patch:
-        return get_url() + '/timetable/event/'
+        return get_url(base) + '/timetable/event/'
 
 
 TEST_URL = "https://timetable.api.test.profcomff.com"
 PROD_URL = "https://timetable.api.profcomff.com"
 
 
-def get_url():
-    if mode == MODES.prod:
+def get_url(base):
+    if base == "prod":
         return PROD_URL
-    else:
+    if base == "test":
         return TEST_URL
