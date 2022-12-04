@@ -23,8 +23,8 @@ def delete_lessons(headers, start, end, base):
     start = start.timestamp()
     end = end.timestamp()
 
-    url_delete_events = urls_api.get_url_event(urls_api.MODES_URL.delete, base) + 'bulk'
-    events = {'start': start, 'end': end}
+    url_delete_events = urls_api.get_url_event(urls_api.MODES_URL.delete, base) + 'bulk' \
+                        + '?start={}&end={}'.format(start, end)
 
-    r = requests.delete(url_delete_events, json=events, headers=headers)
-    _logger.debug(r.json())
+    r = requests.delete(url_delete_events, headers=headers)
+    _logger.debug(r)
