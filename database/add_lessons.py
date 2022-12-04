@@ -14,7 +14,7 @@ _logger = logging.getLogger(__name__)
 # @retry(retry_on_exception=lambda e: isinstance(e, RequestException), wait_exponential_multiplier=1000,
 #        wait_exponential_max=30000, stop_max_attempt_number=30)
 def upload_event(event, headers, url_post_event):
-    r = requests.post(url = url_post_event, json=event, headers=headers)
+    r = requests.post(url=url_post_event, data=event, headers=headers)
     _logger.debug(r.json())
 
 
@@ -41,12 +41,9 @@ def add_lessons(lessons, headers, base):
     #         "end_ts": row['end']
     #     }
     #     upload_event(event, headers, url_post_event)
-    result = lessons[:10].to_json(orient='records', force_ascii=False)
-    print(result)
+    result = lessons.to_json(orient='records', force_ascii=False).encode('utf-8')
     # parsed = json.loads(result)
     # print(json.dumps(parsed, indent=4))
     #
-    # print(result)
-    result = '[{"start_ts":"2022-09-01T09:00:00Z","end_ts":"2022-09-01T10:35:00Z","group_id":15,"name":"Математический анализ ","lecturer_id":[30],"room_id":[63]}, {"start_ts":"2022-09-01T13:30:00Z","end_ts":"2022-09-01T15:05:00Z","group_id":15,"name":"Математическая обработка наблюдений ","lecturer_id":[667],"room_id":[56]}]'
     upload_event(result, headers, url_post_event)
 
