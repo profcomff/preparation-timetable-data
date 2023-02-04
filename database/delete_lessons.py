@@ -4,7 +4,7 @@ import logging
 import requests
 from requests.exceptions import RequestException
 from retrying import retry
-
+from datetime import timedelta
 from utilities import urls_api
 
 _logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ def delete_lessons(headers, start, end, base):
     """
     _logger.info("Удаляю пары из базы данных... ")
     start = datetime.datetime.strptime(start, "%m/%d/%Y")
-    end = datetime.datetime.strptime(end, "%m/%d/%Y")
+    end = datetime.datetime.strptime(end, "%m/%d/%Y")+timedelta(days=1)
 
     start = start.timestamp()
     end = end.timestamp()
