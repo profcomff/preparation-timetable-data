@@ -28,9 +28,9 @@ def _parse_group(group):
                 return [(result[_i + 1], result[i + 1 + 1]) for _i in range(i + 1)]
 
     # '{303 - ...}{n}'
-    for i in range(4):
+    for i in range(6):
         result = re.match(f"[А-Яа-яёЁ ]*({number_group}) *-* *({name_group}+)" +
-                          f"/*({number_group}) *-* *({name_group}+)" * i, group)
+                          f" */* *({number_group}) *-* *({name_group}+)" * i, group)
         if not (result is None):
             if group == result[0]:
                 return [(result[2 * _i + 1], result[2 * _i + 1 + 1]) for _i in range(i + 1)]

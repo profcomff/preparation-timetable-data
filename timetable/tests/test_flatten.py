@@ -13,6 +13,8 @@ class Test(TestCase):
         assert _to_list(pd.NA) == []
         assert _to_list([["a"], "b"]) == ["a", "b"]
         assert _to_list(["a", None]) == ["a"]
+        assert _to_list([("a",), "b"]) == ["a", "b"]
+        assert _to_list(("a",)) == ["a"]
 
     def test_flatten(self):
         data = pd.DataFrame(

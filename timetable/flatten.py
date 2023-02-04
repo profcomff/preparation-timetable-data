@@ -6,7 +6,7 @@ _logger = logging.getLogger(__name__)
 
 
 def _to_list(value):
-    if isinstance(value, list):
+    if isinstance(value, list) or isinstance(value, tuple):
         result = []
         for item in value:
             result += _to_list(item)

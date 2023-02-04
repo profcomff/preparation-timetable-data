@@ -9,6 +9,7 @@ class Test(TestCase):
         assert not _compare_groups("307", "308")
         assert _compare_groups("506ма", "506 Ма")
         assert _compare_groups("307", "307а")
+        assert not _compare_groups("307м", "307ма")
 
     def test__parse_subjects(self):
         result = _parse_subjects("307", "307 - ЧЗХ")
@@ -49,4 +50,7 @@ class Test(TestCase):
 
         result = _parse_subjects("301", "1 поток без 307 группы и астр. - ЧЗХ")
         assert result is None
+
+        result = _parse_subjects("103м", "103ма - Д/п, 103М - С/к, 140М - ФТД ")
+        assert result == "С/к"
 

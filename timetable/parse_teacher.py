@@ -19,6 +19,7 @@ def parse_teacher(lessons):
         teacher = row["teacher"]
 
         if pd.notna(teacher):
+            # TODO: У некоторых преподавателей нет отчества.
             result = re.findall(r"[А-Яа-яёЁ]+ +[А-Яа-яёЁ]\. +[А-Яа-яёЁ]\.", teacher)
             for i, item in enumerate(result):
                 item = re.match(r"([А-Яа-яёЁ]+) +([А-Яа-яёЁ]\.) +([А-Яа-яёЁ]\.)", item)
@@ -27,6 +28,9 @@ def parse_teacher(lessons):
             teacher = result
             unique_teachers.update(set(teacher))
 
+        if isinstance(teacher, list):
+            teacher = tuple(teacher)
         teachers.append(teacher)
+
     lessons["teacher"] = teachers
     return lessons, list(unique_teachers)

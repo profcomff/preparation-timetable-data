@@ -52,7 +52,7 @@ def _parse_name(name):
 
     # '15.10-18.50 МЕЖФАКУЛЬТЕТСКИЕ КУРСЫ'
     # Этот кейс вынесен отдельно по такой же причине, как и запрет точки в прошлом кейсе.
-    result = re.match(r"(15\.10-18\.50 МЕЖФАКУЛЬТЕТСКИЕ КУРСЫ)", name)
+    result = re.match(r"(15\.10 *- *18\.50 МЕЖФАКУЛЬТЕТСКИЕ КУРСЫ)", name)
     if not (result is None):
         if name == result[0]:
             parsed_name["subject"] = result[1]
