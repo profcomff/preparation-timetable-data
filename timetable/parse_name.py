@@ -6,6 +6,14 @@ import pandas as pd
 _logger = logging.getLogger(__name__)
 
 
+def _preprocessing(name):
+    """По сути, исправление опечаток в названии пар."""
+    if name == "128мб - Специальный физический практикум Белов        А. А. Демин Д. С.":
+        return "128мб - Специальный физический практикум Белов А. А. Демин Д. С."
+
+    return name
+
+
 def _parse_name(name):
     """
     Разделяет одно 'name' на 'subject', 'teacher' и 'place' по заданным регулярным выражениям.
@@ -13,6 +21,8 @@ def _parse_name(name):
     В 'subject' включен номер группы, если он указан в названии.
     """
     parsed_name = {"subject": None, "teacher": None, "place": None}
+
+    name = _preprocessing(name)
 
     # '... <nobr>5-27</nobr> проф. Чиркин А. С.'
     result = re.match(r"([А-Яа-яёЁa-zA-Z +,/.\-\d]+)<nobr>([А-Яа-яёЁa-zA-Z +,/.\-\d]+)</nobr>" +
@@ -63,7 +73,8 @@ def _parse_name(name):
     # Поэтому такие кейсы надо писать в _log.warning.
 
     # '... доц. Водовозов В. Ю.'
-    result = re.match(r"([А-Яа-яёЁa-zA-Z +,/\-\d]+) (доц. [А-Яа-яёЁa-zA-Z]+ [А-Яа-яёЁa-zA-Z]\. [А-Яа-яёЁa-zA-Z]\.)", name)
+    result = re.match(r"([А-Яа-яёЁa-zA-Z +,/\-\d]+) (доц. [А-Яа-яёЁa-zA-Z]+ [А-Яа-яёЁa-zA-Z]\. [А-Яа-яёЁa-zA-Z]\.)",
+                      name)
     if not (result is None):
         if name == result[0]:
             parsed_name["subject"] = result[1]
@@ -95,6 +106,7 @@ def parse_name(lessons):
 
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument("s")
     args = parser.parse_args()

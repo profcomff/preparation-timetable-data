@@ -7,15 +7,19 @@ from timetable.multiple_lessons import multiple_lessons
 class Test(TestCase):
     def test_multiple_lessons(self):
         data = pd.DataFrame(
-            {'weekday': [0, 1, 2, 1, 2],
-             'group': [101, 102, 103, 104, 103],
-             'subject': [1, 3, 2, 4, 2],
-             'start': [0, 2, 1, 5, 1],
-             'teacher': ['0', '1', '2', '3', '4'],
-             'place': ['0', '1', '3', '3', '5']}
+            {'weekday': [0, 2, 2, 1, 1],
+             'group': [101, 103, 103, 107, 107],
+             'subject': [1, 2, 2, 6, 6],
+             'teacher': ['0', '2', '4', "5", "5"],
+             'place': ['0', '3', '5', "7", "7"],
+             "num": ["0", "1", "1", "4", "4"],
+             "even": [True, True, True, True, False],
+             "odd": [False, True, True, False, True]}
         )
 
         new_df = multiple_lessons(data)
 
-        assert list(new_df['place']) == ['0', '1', '3', ['3', '5']]
-        assert list(new_df["teacher"]) == ["0", "1", "3", ["2", "4"]]
+        assert list(new_df['place']) == ['0', "7", ['3', '5']]
+        assert list(new_df["teacher"]) == ["0", "5", ["2", "4"]]
+        assert list(new_df['even']) == [True, True, True]
+        assert list(new_df["odd"]) == [False, True, True]
