@@ -54,3 +54,12 @@ class Test(TestCase):
         result = _parse_subjects("103м", "103ма - Д/п, 103М - С/к, 140М - ФТД ")
         assert result == "С/к"
 
+        result = _parse_subjects("440", "403 Д/П, 440 ФТД по выбору")
+        assert result == "ФТД по выбору"
+
+        result = _parse_subjects("440а", "403 Д/П, 440 а ФТД по выбору")
+        assert result == "ФТД по выбору"
+
+        result = _parse_subjects("440ма", "403 Д/П, 440 ма ФТД по выбору")
+        assert result == "ФТД по выбору"
+

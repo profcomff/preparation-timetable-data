@@ -29,11 +29,12 @@ lessons = parse_name(lessons)
 lessons, places = parse_place(lessons)
 lessons, groups = parse_group(lessons)
 lessons, teachers = parse_teacher(lessons)
-lessons, subjects = parse_subjects(lessons)
+lessons = parse_subjects(lessons)
+lessons, subjects = pretty_subjects(lessons)
 
 lessons = multiple_lessons(lessons)
 lessons = flatten(lessons)
-lessons.to_excel("lessons.xlsx", "1")
+# lessons.to_excel("lessons.xlsx", "1")
 
 # ---------------- Loading to server ----------------
 completion_lecturers(teachers, headers, base)
@@ -43,8 +44,8 @@ completion_groups(groups, headers, base)
 lessons = to_id(lessons, headers, base)
 lessons = calc_date(lessons, args.begin, args.end)
 
-# delete_lessons(headers, args.begin, args.end, base)
-# add_lessons(lessons, headers, base)
+delete_lessons(headers, args.begin, args.end, base)
+add_lessons(lessons, headers, base)
 
 input("Готово. Для продолжения нажмите любую клавишу.")
 

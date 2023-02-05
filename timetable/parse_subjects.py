@@ -41,7 +41,7 @@ def _parse_subjects(group, subject):
     'Group' должно быть пропущено через '_post_processing'.
     В случае отсутствия подходящего регулярного выражения выдает предупреждение и возвращает сам 'subject'.
     """
-    number_group = r"\d{3} {0,1}[А-Яа-яёЁ]*"
+    number_group = r"\d{3} {0,1}[А-Яа-яёЁ]{0,2}"
     name_subject = r"[А-Яа-яёЁA-Z ./\-]+"
     delimiter = r"[, .и+\-]*"
 
@@ -146,7 +146,6 @@ def _parse_subjects(group, subject):
 def parse_subjects(lessons):
     """
     Парсит колонку 'subject' и, если надо, удаляет строчку из таблицы (если в названии предметы указаны группы).
-    Дополнительно возвращает список предметов.
     """
     _logger.info("Начинаю парсить 'subjects'...")
 
@@ -165,7 +164,7 @@ def parse_subjects(lessons):
     lessons["subject"] = subjects
     lessons = lessons.reset_index(drop=True)
 
-    return lessons, list(set(lessons["subject"].tolist()))
+    return lessons
 
 
 if __name__ == "__main__":
