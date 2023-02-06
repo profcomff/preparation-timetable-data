@@ -81,10 +81,12 @@ def _parse_subjects(group, subject):
                             current_index += 1
                             # Нужно учесть: 402 - 406 == 402, 403, 404, 405, 406
                             if result[current_index].strip().rstrip() == "-":
-                                # Если будет 102м - 103мб, то будет ошибка.
-                                for sub_group in range(int(result[current_index-1])+1, int(result[current_index+1])):
-                                    # Не берем первую (уже взяли) и последнюю (возьмем потом).
-                                    current_groups.append(str(sub_group))
+                                # Если будет 102м - 103мб, то будет ошибка, поэтому кикаем это.
+                                if result[current_index-1].strip().rstrip().isdigit() \
+                                        and result[current_index+1].strip().rstrip().isdigit():
+                                    for sub_group in range(int(result[current_index-1])+1, int(result[current_index+1])):
+                                        # Не берем первую (уже взяли) и последнюю (возьмем потом).
+                                        current_groups.append(str(sub_group))
                             # Group.
                             current_index += 1
                             current_groups.append(result[current_index])

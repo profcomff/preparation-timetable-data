@@ -66,3 +66,6 @@ class Test(TestCase):
         result = _parse_subjects("103", "101 - 105 Д/П, 109, 110 - ПНХ")
         assert result == "Д/П"
 
+        result = _parse_subjects("143м", "107мб, 143М - 143М ПНХ")
+        assert result == "ПНХ"
+
