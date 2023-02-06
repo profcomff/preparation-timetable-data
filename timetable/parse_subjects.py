@@ -1,5 +1,11 @@
+if __name__ == "__main__":
+    import sys
+    # Странная штука. Из консоли это не добавляется автоматически.
+    sys.path.insert(1, '/home/andrey/PycharmProjects/preparation-timetable-data')
+
 import logging
 import re
+from utilities.ndim_iterator import NDimIterator
 
 _logger = logging.getLogger(__name__)
 
@@ -47,58 +53,55 @@ def _parse_subjects(group, subject):
 
     subject = _preprocessing(subject)
 
-    # 307{n} - ...
-    for i in range(12):
-        result = re.match(f"({number_group})" + f"{delimiter}({number_group})" * i + f" *-* ({name_subject})", subject)
-        if not (result is None):
-            if subject == result[0]:
-                if not any([_compare_groups(group, result[1 + j]) for j in range(i + 1)]):
-                    return None
-                else:
-                    return result[1 + i + 1]
-
-    # 307{n} - ..., 302{m} - ...
-    for i in range(8):
-        for j in range(8):
-            result = re.match(f"({number_group})" + f"{delimiter}({number_group})" * i + f" *-* ({name_subject}), *" +
-                              f"({number_group})" + f"{delimiter}({number_group})" * j + f" *-* ({name_subject})",
-                              subject)
+    # [307{value_i} - ...]{dim}
+    for dim in range(3):
+        for iters in NDimIterator(dim+1, [12, 8, 2][dim]):
+            regex = ""
+            for i, value in enumerate(iters):
+                regex += f"({number_group})" + f"({delimiter})({number_group})" * value + f" *-* ({name_subject})"
+                if i != len(iters)-1:
+                    regex += ", *"
+            result = re.match(regex, subject)
             if not (result is None):
                 if subject == result[0]:
-                    left = any([_compare_groups(group, result[1 + k]) for k in range(i + 1)])
-                    right = any([_compare_groups(group, result[1 + i + 1 + 1 + k]) for k in range(j + 1)])
+                    groups = []     # Example: [["101", "203"], ["434", "342"], ["102"]]
+                    subjects_index = []
 
-                    if left:
-                        return result[1 + i + 1]
-                    elif right:
-                        return result[1 + i + 1 + 1 + j + 1]
-                    else:
+                    current_index = 0
+                    for value in iters:
+                        current_groups = []
+
+                        # First group.
+                        current_index += 1
+                        current_groups.append(result[current_index])
+
+                        # Other groups.
+                        for i in range(value):
+                            # Delimiter.
+                            current_index += 1
+                            # Нужно учесть: 402 - 406 == 402, 403, 404, 405, 406
+                            if result[current_index].strip().rstrip() == "-":
+                                # Если будет 102м - 103мб, то будет ошибка.
+                                for sub_group in range(int(result[current_index-1])+1, int(result[current_index+1])):
+                                    # Не берем первую (уже взяли) и последнюю (возьмем потом).
+                                    current_groups.append(str(sub_group))
+                            # Group.
+                            current_index += 1
+                            current_groups.append(result[current_index])
+
+                        # Subject.
+                        current_index += 1
+                        subjects_index.append(current_index)
+
+                        # Add.
+                        groups.append(current_groups)
+
+                    # Handle.
+                    groups = list(map(lambda x: any([_compare_groups(group, _x) for _x in x]), groups))
+                    if groups.count(True) == 0:
                         return None
-
-    # TODO - сделать [307{n_i} - ...]{m}
-    # 307{n} - ..., 302{m} - ..., 308{m} - ...
-    for i in range(2):
-        for j in range(2):
-            for k in range(2):
-                result = re.match(
-                    f"({number_group})" + f"{delimiter}({number_group})" * i + f" *-* ({name_subject}), *" +
-                    f"({number_group})" + f"{delimiter}({number_group})" * j + f" *-* ({name_subject}), *" +
-                    f"({number_group})" + f"{delimiter}({number_group})" * k + f" *-* ({name_subject})",
-                    subject)
-                if not (result is None):
-                    if subject == result[0]:
-                        left = any([_compare_groups(group, result[1 + l]) for l in range(i + 1)])
-                        middle = any([_compare_groups(group, result[1 + i + 1 + 1 + l]) for l in range(j + 1)])
-                        right = any([_compare_groups(group, result[1 + i + 1 + 1 + j + 1 + 1 + l]) for l in range(k + 1)])
-
-                        if left:
-                            return result[1 + i + 1]
-                        elif middle:
-                            return result[1 + i + 1 + 1 + j + 1]
-                        elif right:
-                            return result[1 + i + 1 + 1 + j + 1 + 1 + k + 1]
-                        else:
-                            return None
+                    else:
+                        return result[subjects_index[groups.index(True)]]
 
     # 1 поток без 307 группы - S
     result = re.match(f"1 поток без [34]07 группы - ({name_subject})", subject)
