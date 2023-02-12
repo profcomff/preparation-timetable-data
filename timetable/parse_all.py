@@ -11,7 +11,4 @@ def parse_all(lessons):
     lessons = parse_subjects(lessons)
     lessons, subjects = pretty_subjects(lessons)
 
-    lessons = multiple_lessons(lessons)
-    lessons = flatten(lessons)
-
     return lessons, places, groups, teachers, subjects
