@@ -86,3 +86,14 @@ def completion_groups(new_groups, headers, base):
             data = {'name': name, 'number': number}
             response = requests.post(url_post_group, json=data, headers=headers)
             _logger.debug(response.json())
+
+
+def completion(new_groups, new_rooms, new_lecturers, headers, base):
+    """
+    Добавляет группы, аудитории и лекторов в базу данных, которые появляются при парсинге,
+    но в данный момент отсутсвуют в базе.
+    """
+    completion_lecturers(new_lecturers, headers, base)
+    completion_rooms(new_rooms, headers, base)
+    completion_groups(new_groups, headers, base)
+

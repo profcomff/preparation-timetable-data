@@ -1,5 +1,5 @@
 from unittest import TestCase
-from timetable.pretty_subjects import _preprocessing
+from timetable import _preprocessing
 
 
 class Test(TestCase):

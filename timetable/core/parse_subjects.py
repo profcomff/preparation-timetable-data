@@ -1,6 +1,7 @@
 if __name__ == "__main__":
     import sys
     # Странная штука. Из консоли это не добавляется автоматически.
+    # TODO: Автоматически определять путь.
     sys.path.insert(1, '/home/andrey/PycharmProjects/preparation-timetable-data')
 
 import logging

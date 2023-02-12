@@ -1,7 +1,7 @@
 from unittest import TestCase
 import pandas as pd
 
-from timetable.multiple_lessons import multiple_lessons
+from timetable import multiple_lessons
 
 
 class Test(TestCase):

@@ -168,34 +168,22 @@ def run(html: str) -> List[Dict[str, Any]]:
     return Group(html).run()
 
 
-def parse_timetable():
+USER_AGENT = "Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 " \
+             "(KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36"
+HEADERS = {"User-Agent": USER_AGENT}
+
+
+def parse_timetable(course: int, stream: int, group: int):
     """
     Получает данные с сайта расписания.
     """
-    # [[курс, поток, количество групп], ...]
-    sources = [
-        [1, 1, 6], [1, 2, 6], [1, 3, 6],
-        [2, 1, 6], [2, 2, 6], [2, 3, 6],
-        [3, 1, 10], [3, 2, 8],
-        [4, 1, 10], [4, 2, 8],
-        [5, 1, 13], [5, 2, 11],
-        [6, 1, 11], [6, 2, 10]
-    ]
-
-    USER_AGENT = "Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 " \
-                 "(KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36"
-    HEADERS = {"User-Agent": USER_AGENT}
-
-    _logger.info("Начинаю парсинг сайта расписания...")
     results = pd.DataFrame()
-    for index, source in enumerate(sources):
-        for group in range(1, source[2] + 1):
-            try:
-                html = requests.get(f"http://ras.phys.msu.ru/table/{source[0]}/{source[1]}/{group}.htm",
-                                    headers=HEADERS).text
-                results = pd.concat([results, pd.DataFrame(run(html))])
-            except Exception:
-                _logger.warning(f"'{source[0]}/{source[1]}/{group}' парсинг завершился ошибкой.")
-                raise
+    try:
+        html = requests.get(f"http://ras.phys.msu.ru/table/{course}/{stream}/{group}.htm",
+                            headers=HEADERS).text
+        results = pd.concat([results, pd.DataFrame(run(html))])
+    except Exception:
+        _logger.warning(f"'{course}/{stream}/{group}' парсинг завершился ошибкой.")
+        raise
 
     return results
