@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from timetable import _parse_group
+from timetable.core import _parse_group
 
 
 class Test(TestCase):

@@ -1,6 +1,8 @@
 from unittest import TestCase
-from timetable import calc_date
+
 import pandas as pd
+
+from timetable import calc_date
 
 
 class Test(TestCase):
@@ -21,7 +23,8 @@ class Test(TestCase):
 
         df_right = pd.DataFrame(
             {
-                'start': ["2022-09-01T09:00:00Z", "2022-09-02T10:50:00Z", "2022-09-08T09:00:00Z", "2022-09-09T13:30:00Z"],
+                'start': ["2022-09-01T09:00:00Z", "2022-09-02T10:50:00Z", "2022-09-08T09:00:00Z",
+                          "2022-09-09T13:30:00Z"],
                 'end': ["2022-09-01T10:35:00Z", "2022-09-02T12:25:00Z", "2022-09-08T10:35:00Z", "2022-09-09T15:05:00Z"],
                 'subject': ['Кванты', 'Статы', 'Кванты', 'Слупы']
             }

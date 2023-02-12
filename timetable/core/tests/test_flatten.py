@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import pandas as pd
 
-from timetable import _to_list, flatten
+from timetable.core import _to_list, flatten
 
 
 class Test(TestCase):

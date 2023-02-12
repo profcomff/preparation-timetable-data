@@ -36,6 +36,7 @@ lessons = classical_parse_timetable(sources)
 
 # ---------------- Parsing ----------------
 lessons = parse_name(lessons)
+lessons = manual_edit(lessons)
 lessons, places, groups, teachers, subjects = parse_all(lessons)
 # lessons.to_excel("lessons.xlsx", "1")
 
