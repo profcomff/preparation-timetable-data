@@ -1,0 +1,6 @@
+Metadata-Version: 2.1
+Name: parselibrary
+Version: 0.0.1
+Summary: Package for parsing
+Classifier: Programming Language :: Python :: 3.7
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
