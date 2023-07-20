@@ -1,6 +1,1 @@
-requests
-pandas
-retrying
-beautifulsoup4
-psycopg2-binary
 setuptools
