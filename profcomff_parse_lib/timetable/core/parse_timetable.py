@@ -12,6 +12,17 @@ from bs4 import BeautifulSoup
 _logger = logging.getLogger(__name__)
 
 
+def instead_request(course, stream, group, conn):
+    cursor = conn.cursor()
+    postgreSQL_select_Query = 'SELECT * FROM "STG_TIMETABLE".raw_html_old'
+    cursor.execute(postgreSQL_select_Query)
+    pages = cursor.fetchall()
+    url = f"http://ras.phys.msu.ru/table/{course}/{stream}/{group}.htm"
+    for page in pages:
+        if page[0] == url:
+            return page[1]
+
+
 class Group:
     def __init__(self, html: BeautifulSoup):
         self.data = html
@@ -179,8 +190,10 @@ def parse_timetable(course: int, stream: int, group: int):
     """
     results = pd.DataFrame()
     try:
-        html = requests.get(f"http://ras.phys.msu.ru/table/{course}/{stream}/{group}.htm",
-                            headers=HEADERS).text
+        # html = requests.get(f"http://ras.phys.msu.ru/table/{course}/{stream}/{group}.htm",
+        #                     headers=HEADERS).text
+        # results = pd.concat([results, pd.DataFrame(run(html))])
+        html = instead_request(course, stream, group)
         results = pd.concat([results, pd.DataFrame(run(html))])
     except Exception:
         _logger.warning(f"'{course}/{stream}/{group}' парсинг завершился ошибкой.")
