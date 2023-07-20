@@ -51,9 +51,8 @@ def get_url_event(mode_, base):
         return get_url(base) + '/timetable/event/'
 
 
-TEST_URL = "https://timetable.api.test.profcomff.com"
-PROD_URL = "https://timetable.api.profcomff.com"
-
+TEST_URL = "https://api.test.profcomff.com"
+PROD_URL = "https://api.profcomff.com"
 
 def get_url(base):
     if base == "prod":
