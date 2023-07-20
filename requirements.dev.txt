@@ -1,1 +1,2 @@
 setuptools
+psycopg2-binary

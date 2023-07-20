@@ -8,17 +8,11 @@ from typing import Any, List, Dict
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-import psycopg2
 
 _logger = logging.getLogger(__name__)
 
-def instead_request(course, stream, group):
-    conn = psycopg2.connect(
-        host="localhost",
-        database="postgres",
-        user="postgres",
-        password="postgres")
 
+def instead_request(course, stream, group, conn):
     cursor = conn.cursor()
     postgreSQL_select_Query = 'SELECT * FROM "STG_TIMETABLE".raw_html_old'
     cursor.execute(postgreSQL_select_Query)
