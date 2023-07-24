@@ -16,15 +16,15 @@ def separate(lessons):
 
 def part_to_array(lessons):
     res = []
-    L = len(lessons)
-    while L > 0:
+    length = len(lessons)
+    while length > 0:
         buf = lessons[0]
         modif = buf
         modif["group"] = [buf["group"]]
         lessons.pop(0)
-        L -= 1
+        length -= 1
         i = 0
-        while i < L:
+        while i < length:
             a = buf.drop(labels=["group"])
             b = lessons[i].drop(labels=["group"])
             boo = True
@@ -35,7 +35,7 @@ def part_to_array(lessons):
             if boo:
                 modif["group"].append(lessons[i]["group"])
                 lessons.pop(i)
-                L -= 1
+                length -= 1
                 i -= 1
             i += 1
         res.append(modif)
@@ -50,5 +50,5 @@ def all_to_array(lessons):
         for item in res1:
             res.append(item)
     res = pd.DataFrame(res)
-    res.reset_index(drop= True , inplace= True )
+    res.reset_index(drop=True, inplace=True)
     return res

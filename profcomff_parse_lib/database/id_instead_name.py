@@ -42,19 +42,6 @@ def group_to_id(lessons, headers, base):
     response = requests.get(urls_api.get_url_group(urls_api.MODES_URL.get, base), headers=headers)
     groups = response.json()["items"]
 
-    # new_groups = lessons["group"].tolist()
-    # for i, row in lessons.iterrows():
-    #     b = False
-    #     for group in groups:
-    #         if row["group"] == group["number"]:
-    #             new_groups[i] = group["id"]
-    #             b = True
-    #             break
-    #     if not b:
-    #         _logger.critical("Ошибка, группа '{group}' не найдена. Завершение работы".format(group=row["group"]))
-    #         sys.exit()
-    # lessons["group"] = new_groups
-
     new_groups = lessons["group"].tolist()
     for i, row in lessons.iterrows():
         for j in range(len(row["group"])):

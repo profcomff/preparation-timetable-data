@@ -1,9 +1,9 @@
-import T
+import passwords
 import psycopg2
 import datetime
 from profcomff_parse_lib import *
 
-headers = {"Authorization": f"{T.at}"}
+headers = {"Authorization": f"{passwords.at}"}
 
 # ---------------- Parsing timetable from site ----------------
 # [[курс, поток, количество групп], ...]
@@ -18,10 +18,10 @@ sources = [
 
 # Временная мера, пока нет расписания летом.
 conn = psycopg2.connect(
-        host=T.host,
-        database=T.database,
-        user=T.user,
-        password=T.password)
+        host=passwords.host,
+        database=passwords.database,
+        user=passwords.user,
+        password=passwords.password)
 
 lessons = classical_parse_timetable(sources, conn)
 
