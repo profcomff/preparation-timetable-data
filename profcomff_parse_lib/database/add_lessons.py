@@ -25,7 +25,7 @@ def add_lessons(lessons, headers, base):
         event = {
             "name": row['subject'],
             "room_id": row['place'],
-            "group_id": [row['group']],
+            "group_id": row['group'],
             "lecturer_id": row['teacher'],
             "start_ts": row['start'],
             "end_ts": row['end']
