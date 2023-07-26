@@ -3,7 +3,7 @@ import psycopg2
 import datetime
 from profcomff_parse_lib import *
 
-headers = {"Authorization": f"{passwords.at}"}
+headers = {"Authorization": f"{passwords.token}"}
 
 # ---------------- Parsing timetable from site ----------------
 # [[курс, поток, количество групп], ...]

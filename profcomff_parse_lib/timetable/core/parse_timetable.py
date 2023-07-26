@@ -190,9 +190,6 @@ def parse_timetable(course: int, stream: int, group: int, conn):
     """
     results = pd.DataFrame()
     try:
-        # html = requests.get(f"http://ras.phys.msu.ru/table/{course}/{stream}/{group}.htm",
-        #                     headers=HEADERS).text
-        # results = pd.concat([results, pd.DataFrame(run(html))])
         html = instead_request(course, stream, group, conn)
         results = pd.concat([results, pd.DataFrame(run(html))])
     except Exception:
