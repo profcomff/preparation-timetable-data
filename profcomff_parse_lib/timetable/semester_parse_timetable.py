@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from timetable.core.parse_timetable import parse_timetable
+from .core.parse_timetable import parse_timetable
 
 _logger = logging.getLogger(__name__)
 

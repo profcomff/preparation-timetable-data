@@ -1,9 +1,12 @@
-import passwords
 import psycopg2
-import datetime
 from profcomff_parse_lib import *
+from dotenv import load_dotenv
+import os
+import datetime
 
-headers = {"Authorization": f"{passwords.token}"}
+load_dotenv()
+token = os.getenv("token")
+headers = {"Authorization": f"{token}"}
 
 # ---------------- Parsing timetable from site ----------------
 # [[курс, поток, количество групп], ...]
@@ -18,10 +21,10 @@ sources = [
 
 # Временная мера, пока нет расписания летом.
 conn = psycopg2.connect(
-        host=passwords.host,
-        database=passwords.database,
-        user=passwords.user,
-        password=passwords.password)
+        host=os.getenv("host"),
+        database=os.getenv("database"),
+        user=os.getenv("user"),
+        password=os.getenv("password"))
 
 lessons = classical_parse_timetable(sources, conn)
 
@@ -31,9 +34,7 @@ lessons, places, groups, teachers, subjects = parse_all(lessons)
 lessons = manual_edit(lessons)
 lessons = multiple_lessons(lessons)
 lessons = flatten(lessons)
-lessons.to_excel("lessons.xlsx", "1")
 lessons = all_to_array(lessons)
-
 # ---------------- Loading to server ----------------
 completion(groups, places, teachers, headers, "test")
 lessons = to_id(lessons, headers, "test")

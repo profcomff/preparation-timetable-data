@@ -3,7 +3,7 @@ import sys
 
 import requests
 
-from utilities import urls_api
+from profcomff_parse_lib.utilities import urls_api
 
 _logger = logging.getLogger(__name__)
 

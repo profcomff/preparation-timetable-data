@@ -1,4 +1,4 @@
-from timetable.core import *
+from .core import *
 
 
 def parse_all(lessons):

@@ -4,7 +4,7 @@ import requests
 from requests.exceptions import RequestException
 from retrying import retry
 
-from utilities import urls_api
+from profcomff_parse_lib.utilities import urls_api
 
 _logger = logging.getLogger(__name__)
 

@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import pandas as pd
 
-from timetable import calc_date
+from profcomff_parse_lib.timetable import calc_date
 
 
 class Test(TestCase):

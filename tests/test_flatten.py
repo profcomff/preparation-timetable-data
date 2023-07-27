@@ -2,19 +2,19 @@ from unittest import TestCase
 
 import pandas as pd
 
-from timetable.core import _to_list, flatten
+from profcomff_parse_lib.timetable.flatten import flatten_to_list, flatten
 
 
 class Test(TestCase):
     def test__to_list(self):
-        assert _to_list("a") == ["a"]
-        assert _to_list(["a"]) == ["a"]
-        assert _to_list(None) == []
-        assert _to_list(pd.NA) == []
-        assert _to_list([["a"], "b"]) == ["a", "b"]
-        assert _to_list(["a", None]) == ["a"]
-        assert _to_list([("a",), "b"]) == ["a", "b"]
-        assert _to_list(("a",)) == ["a"]
+        assert flatten_to_list("a") == ["a"]
+        assert flatten_to_list(["a"]) == ["a"]
+        assert flatten_to_list(None) == []
+        assert flatten_to_list(pd.NA) == []
+        assert flatten_to_list([["a"], "b"]) == ["a", "b"]
+        assert flatten_to_list(["a", None]) == ["a"]
+        assert flatten_to_list([("a",), "b"]) == ["a", "b"]
+        assert flatten_to_list(("a",)) == ["a"]
 
     def test_flatten(self):
         data = pd.DataFrame(
