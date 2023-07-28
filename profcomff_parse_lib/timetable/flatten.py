@@ -5,11 +5,11 @@ import pandas as pd
 _logger = logging.getLogger(__name__)
 
 
-def _to_list(value):
+def flatten_to_list(value):
     if isinstance(value, list) or isinstance(value, tuple):
         result = []
         for item in value:
-            result += _to_list(item)
+            result += flatten_to_list(item)
         return result
 
     if value is None:
@@ -27,8 +27,8 @@ def flatten(lessons):
     """
     _logger.info("Произвожу сглаживание...")
 
-    lessons["place"] = lessons["place"].map(_to_list)
-    lessons["teacher"] = lessons["teacher"].map(_to_list)
+    lessons["place"] = lessons["place"].map(flatten_to_list)
+    lessons["teacher"] = lessons["teacher"].map(flatten_to_list)
 
     return lessons
 

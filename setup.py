@@ -5,7 +5,7 @@ with open("README.md", "r") as readme_file:
 
 setup(
     name="profcomff_parse_lib",
-    version="2023.07.20.1",
+    version="2023.07.28",
     author="Sergey Zamyatin and Andrei Lukianov",
     long_description=readme,
     long_description_content_type="text/markdown",

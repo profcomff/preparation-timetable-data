@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import pandas as pd
 
-from timetable.manual_edit import _delete_row
+from profcomff_parse_lib.timetable.manual_edit import _delete_row
 
 
 class Test(TestCase):
