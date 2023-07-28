@@ -1,6 +1,6 @@
 import logging
 import re
-from utilities.ndim_iterator import NDimIterator
+from profcomff_parse_lib.utilities.ndim_iterator import NDimIterator
 
 _logger = logging.getLogger(__name__)
 

@@ -3,7 +3,7 @@ import sys
 
 import requests
 
-from utilities import urls_api
+from profcomff_parse_lib.utilities import urls_api
 
 _logger = logging.getLogger(__name__)
 
@@ -44,16 +44,18 @@ def group_to_id(lessons, headers, base):
 
     new_groups = lessons["group"].tolist()
     for i, row in lessons.iterrows():
-        b = False
-        for group in groups:
-            if row["group"] == group["number"]:
-                new_groups[i] = group["id"]
-                b = True
-                break
-        if not b:
-            _logger.critical("Ошибка, группа '{group}' не найдена. Завершение работы".format(group=row["group"]))
-            sys.exit()
+        for j in range(len(row["group"])):
+            b = False
+            for group in groups:
+                if row["group"][j] == group["number"]:
+                    new_groups[i][j] = group["id"]
+                    b = True
+                    break
+            if not b:
+                _logger.critical("Ошибка, группа '{group}' не найдена. Завершение работы".format(group=row["group"][j]))
+                sys.exit()
     lessons["group"] = new_groups
+
     return lessons
 
 
