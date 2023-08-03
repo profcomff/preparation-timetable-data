@@ -10,6 +10,7 @@ from .database.id_instead_name import to_id
 from .timetable.calc_date import calc_date
 from .database.delete_lessons import delete_lessons
 from .database.add_lessons import add_lessons
+from .database.auto_updating import autoupdate
 
 __all__ = ["classical_parse_timetable", "parse_name", "parse_all", "manual_edit", "multiple_lessons", "flatten",
-           "all_to_array", "completion", "to_id", "calc_date", "delete_lessons", "add_lessons"]
+           "all_to_array", "completion", "to_id", "calc_date", "delete_lessons", "add_lessons", "autoupdate"]

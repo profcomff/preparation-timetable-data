@@ -9,8 +9,7 @@ def separate(lessons):
             for i, row in lessons.iterrows():
                 if row["weekday"] == weekday and row["num"] == num:
                     part.append(row)
-            if len(part) > 0:
-                res.append(part)
+            res.append(part)
     return res
 
 

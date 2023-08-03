@@ -3,8 +3,9 @@ from .completion import completion
 from .id_instead_name import to_id
 from .delete_lessons import delete_lessons
 from .groups_to_array import all_to_array
+from .auto_updating import autoupdate
 
 __all__ = ["completion",
-           "to_id", "add_lessons", "delete_lessons", "all_to_array"]
+           "to_id", "add_lessons", "delete_lessons", "all_to_array", "autoupdate"]
 
 

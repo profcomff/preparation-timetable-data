@@ -20,8 +20,8 @@ def delete_lessons(headers, start, end, base):
     start = datetime.datetime.strptime(start, "%m/%d/%Y")
     end = datetime.datetime.strptime(end, "%m/%d/%Y")+timedelta(days=1)
 
-    start = start.timestamp()
-    end = end.timestamp()
+    start = datetime.datetime.strftime(start, "%Y-%m-%d")
+    end = datetime.datetime.strftime(end, "%Y-%m-%d")
 
     url_delete_events = urls_api.get_url_event(urls_api.MODES_URL.delete, base) + 'bulk' \
                         + '?start={}&end={}'.format(start, end)
