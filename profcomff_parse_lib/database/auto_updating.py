@@ -1,15 +1,11 @@
 import requests
 import os
-import sqlalchemy as sa
 import pandas as pd
-from .groups_to_array import separate
-from profcomff_parse_lib.utilities import urls_api
-from profcomff_parse_lib.timetable.calc_date import calc_date
+import datetime
 from retrying import retry
 from requests.exceptions import RequestException
-import datetime
-# from profcomff_parse_lib import *
-
+from .groups_to_array import separate
+from profcomff_parse_lib.utilities import urls_api
 from profcomff_parse_lib.timetable.semester_parse_timetable import classical_parse_timetable
 from profcomff_parse_lib.timetable.core.parse_name import parse_name
 from profcomff_parse_lib.timetable.parse_all import parse_all
@@ -41,13 +37,8 @@ def delete_event(url, headers):
     requests.delete(url, headers=headers)
 
 
-def get_old_table():
-    host = os.getenv("host")
-    database = os.getenv("database")
-    user = os.getenv("user")
-    password = os.getenv("password")
-    engine = sa.create_engine(f"postgresql://{database}:{user}@{host}/{password}")
-    query = 'SELECT * FROM "myschema".short_events'
+def get_old_table(engine, old_table_name):
+    query = f'SELECT * FROM {old_table_name}'
     table = pd.read_sql_query(query, engine)
     column = [False]*len(table)
     table["correspond"] = column
@@ -77,8 +68,8 @@ def comparison(old, new):
     return old, new
 
 
-def check_date(id, base, begin):
-    r = requests.get(urls_api.get_url_event(urls_api.MODES_URL.get, base) + str(id))
+def check_date(event_id, base, begin):
+    r = requests.get(urls_api.get_url_event(urls_api.MODES_URL.get, base) + str(event_id))
     date_event = r.json()["start_ts"]
     date_event = date_event[:date_event.find("T")]
     date1 = datetime.datetime.strptime(begin, '%m/%d/%Y')
@@ -95,9 +86,9 @@ def update_long(old, new, begin, end, semester_start, headers, base):
     for part in old:
         for el in part:
             if not el["correspond"]:
-                 for id in el["events_id"]:
-                     if check_date(id, base, begin):
-                        for_changing.append(id)
+                 for event_id in el["events_id"]:
+                     if check_date(event_id, base, begin):
+                        for_changing.append(event_id)
 
     for part in new:
         for el in part:
@@ -148,7 +139,7 @@ def update_long(old, new, begin, end, semester_start, headers, base):
     return new
 
 
-def update_short(new, old, conn):
+def update_short(new, old, conn, table_name):
     old_new = []
     for part in old:
         for el in part:
@@ -158,9 +149,7 @@ def update_short(new, old, conn):
     cursor = conn.cursor()
     for i, row in old.iterrows():
         if not row["correspond"]:
-            query = f"""
-            DELETE FROM myschema.short_events WHERE id = {row["id"]};
-            """
+            query = f'DELETE FROM {table_name} WHERE id = {row["id"]};'
             cursor.execute(query)
             conn.commit()
 
@@ -171,8 +160,8 @@ def update_short(new, old, conn):
         item = (row["name"], row["odd"], row["even"], row["weekday"], row["num"],
                 row["start_"], row["end_"], row["rooms_id"],
                 row["groups_id"], row["teachers_id"], row["events_id"])
-        add_query = """
-        INSERT INTO myschema.short_events (name, odd, even, weekday, num, start_, end_, 
+        add_query = f"""
+        INSERT INTO {table_name} (name, odd, even, weekday, num, start_, end_, 
         rooms_id, groups_id, teachers_id, events_id)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
@@ -180,10 +169,7 @@ def update_short(new, old, conn):
         conn.commit()
 
 
-def autoupdate(sources, conn, semester_start):
-    token = os.getenv("token")
-    headers = {"Authorization": f"{token}"}
-
+def autoupdate(sources, conn, engine, headers, table_name, semester_start, begin, end):
     new = classical_parse_timetable(sources, conn)
     new = parse_name(new)
     new, places, groups, teachers, subjects = parse_all(new)
@@ -194,12 +180,10 @@ def autoupdate(sources, conn, semester_start):
 
     completion(groups, places, teachers, headers, "test")
     new = to_id(new, headers, "test")
-    be = datetime.datetime.now()
-    begin = be.strftime("%m/%d/%Y")
-    en = datetime.datetime.now() + datetime.timedelta(days=1)
-    end = en.strftime("%m/%d/%Y")
+    begin = begin.strftime("%m/%d/%Y")
+    end = end.strftime("%m/%d/%Y")
 
-    old = get_old_table()
+    old = get_old_table(engine, table_name)
     old, new = comparison(old, separate(new))
     new = update_long(old, new, begin, end, semester_start, headers, "test")
-    update_short(new, old, conn)
+    update_short(new, old, conn, table_name)

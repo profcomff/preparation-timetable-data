@@ -5,13 +5,13 @@ with open("README.md", "r") as readme_file:
 
 setup(
     name="profcomff_parse_lib",
-    version="2023.08.03.1",
+    version="2023.08.03.2",
     author="Sergey Zamyatin and Andrei Lukianov",
     long_description=readme,
     long_description_content_type="text/markdown",
     url="https://github.com/preparation-timetable-data ",
     packages=find_packages(),
-    install_requires=["requests", "pandas", "setuptools", "retrying", "beautifulsoup4"],
+    install_requires=["requests", "pandas", "setuptools", "retrying", "beautifulsoup4", "sqlalchemy"],
     classifiers=[
         "Programming Language :: Python :: 3.11",
     ],
