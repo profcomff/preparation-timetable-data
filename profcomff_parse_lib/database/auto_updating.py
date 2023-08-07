@@ -108,34 +108,17 @@ def update_long(old, new, begin, end, semester_start, headers, base):
 
     print(len(for_changing))
     print(lessons.shape[0])
-    if len(for_changing) >= lessons.shape[0] > 0:
-        for i, row in lessons.iterrows():
-            request_body = {
-                "name": row['subject'], "room_id": row['place'],
-                "group_id": row['group'], "lecturer_id": row['teacher'],
-                "start_ts": row['start'], "end_ts": row['end']
-            }
-            url = urls_api.get_url_event(urls_api.MODES_URL.patch, base) + str(for_changing[i])
-            patch_event(url, headers, request_body)
-            new["events_id"][row["reference"]].append(for_changing[i])
-        for j in range(lessons.shape[0], len(for_changing)):
-            url = urls_api.get_url_event(urls_api.MODES_URL.delete, base) + str(for_changing[j])
-            delete_event(url, headers)
-    else:
-        if lessons.shape[0] > 0:
-            for i, row in lessons.iterrows():
-                request_body = {
-                    "name": row['subject'], "room_id": row['place'],
-                    "group_id": row['group'], "lecturer_id": row['teacher'],
-                    "start_ts": row['start'], "end_ts": row['end']
-                }
-                if i < len(for_changing):
-                    url = urls_api.get_url_event(urls_api.MODES_URL.patch, base) + str(for_changing[i])
-                    patch_event(url, headers, request_body)
-                    new["events_id"][row["reference"]].append(for_changing[i])
-                else:
-                    url = urls_api.get_url_event(urls_api.MODES_URL.post, base)
-                    new["events_id"][row["reference"]].append(post_event(url, headers, request_body))
+    for Id in for_changing:
+        url = urls_api.get_url_event(urls_api.MODES_URL.delete, base) + str(Id)
+        delete_event(url, headers)
+    for i, row in lessons.iterrows():
+        request_body = {
+            "name": row['subject'], "room_id": row['place'],
+            "group_id": row['group'], "lecturer_id": row['teacher'],
+            "start_ts": row['start'], "end_ts": row['end']
+        }
+        url = urls_api.get_url_event(urls_api.MODES_URL.post, base)
+        new["events_id"][row["reference"]].append(post_event(url, headers, request_body))
     return new
 
 
