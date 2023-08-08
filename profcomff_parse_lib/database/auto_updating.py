@@ -106,8 +106,6 @@ def update_long(old, new, begin, end, semester_start, headers, base):
         ar[ind] = []
     new["events_id"] = ar
 
-    print(len(for_changing))
-    print(lessons.shape[0])
     for Id in for_changing:
         url = urls_api.get_url_event(urls_api.MODES_URL.delete, base) + str(Id)
         delete_event(url, headers)
