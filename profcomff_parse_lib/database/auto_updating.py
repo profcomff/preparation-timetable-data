@@ -76,10 +76,6 @@ def check_date(event_id, base, begin):
     date1 = datetime.datetime.strptime(begin, '%m/%d/%Y')
     date2 = datetime.datetime.strptime(date_event, '%Y-%m-%d')
     return date2 >= date1
-    # if date2 >= date1:
-    #     return True
-    # else:
-    #     return False
 
 
 def update_long(old, new, begin, end, semester_start, headers, base):
@@ -134,7 +130,7 @@ def update_short(new, old, conn, table_name):
             if not row["correspond"]:
                 query = f'DELETE FROM {table_name} WHERE id = {row["id"]};'
                 cursor.execute(query)
-        conn.commit()
+
         new.rename(columns={'place': 'rooms_id', 'group': 'groups_id',
                             'teacher': 'teachers_id', 'subject': 'name',
                             'start': 'start_', 'end': 'end_'}, inplace=True)
@@ -148,7 +144,7 @@ def update_short(new, old, conn, table_name):
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
             """
             cursor.execute(add_query, item)
-        conn.commit()
+    conn.commit()
 
 
 def autoupdate(sources, conn, engine, headers, table_name, semester_start, begin, end):
