@@ -184,16 +184,10 @@ USER_AGENT = "Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKi
 HEADERS = {"User-Agent": USER_AGENT}
 
 
-def parse_timetable(course: int, stream: int, group: int, conn):
+def parse_timetable(html):
     """
     Получает данные с сайта расписания.
     """
     results = pd.DataFrame()
-    try:
-        html = instead_request(course, stream, group, conn)
-        results = pd.concat([results, pd.DataFrame(run(html))])
-    except Exception:
-        _logger.warning(f"'{course}/{stream}/{group}' парсинг завершился ошибкой.")
-        raise
-
+    results = pd.concat([results, pd.DataFrame(run(html))])
     return results

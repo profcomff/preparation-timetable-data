@@ -28,3 +28,10 @@ def delete_lessons(headers, start, end, base):
 
     r = requests.delete(url_delete_events, headers=headers)
     _logger.debug(r)
+
+
+@retry(retry_on_exception=lambda e: isinstance(e, RequestException), wait_exponential_multiplier=1000,
+       wait_exponential_max=30000, stop_max_attempt_number=30)
+def delete_lesson(headers, id, base):
+    url = urls_api.get_url_event(urls_api.MODES_URL.delete, base) + str(id)
+    requests.delete(url, headers=headers)
