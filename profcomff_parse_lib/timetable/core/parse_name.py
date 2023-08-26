@@ -100,6 +100,9 @@ def parse_name(lessons):
     lessons = lessons.reset_index(drop=True)
     addition = pd.DataFrame(parsed_names).reset_index(drop=True)
     lessons = pd.concat([lessons, addition], axis=1)
+    if lessons.shape[0] == 0:
+        lessons = pd.DataFrame({'name': [], 'odd': [], 'even': [], 'weekday': [], 'num': [],
+                                'start': [], 'end': [], 'group': [], 'subject': [], 'teacher': [], 'place': []})
     lessons.drop("name", inplace=True, axis=1)
     return lessons
 

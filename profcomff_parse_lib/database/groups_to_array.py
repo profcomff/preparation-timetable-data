@@ -51,4 +51,8 @@ def all_to_array(lessons):
             res.append(item)
     res = pd.DataFrame(res)
     res.reset_index(drop=True, inplace=True)
+    if res.shape[0] == 0:
+        res = pd.DataFrame(
+            {'odd': [], 'even': [], 'weekday': [], 'num': [], 'start': [], 'end': [], 'group': [],
+             'subject': [], 'teacher': [], 'place': []})
     return res
