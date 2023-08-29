@@ -1,4 +1,4 @@
-d = {
+dict_substitutions = {
     "parse_place": {
         "Ауд. им. Хохлова": "ЦФА"
     },
