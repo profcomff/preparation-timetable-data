@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from timetable.core.parse_subjects import _compare_groups, _parse_subjects
+from profcomff_parse_lib.timetable.core.parse_subjects import _compare_groups, _parse_subjects
 
 
 class Test(TestCase):

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from timetable.core.pretty_subjects import _preprocessing
+from profcomff_parse_lib.timetable.core.pretty_subjects import _preprocessing
 
 
 class Test(TestCase):
