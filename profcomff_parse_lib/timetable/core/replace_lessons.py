@@ -34,6 +34,10 @@ def replace_lessons(lessons, substitutions):
             flag = True
             _logger.critical(f"Замене под номером {key} соответствует количество пар, равному {len(substitutions2lessons[key])}.")
 
+        if len(substitutions2lessons[key]) == 0:
+            flag = True
+            _logger.critical(f"Замене под номером {key} не соответствует ни одна пара.")
+
     for key in lessons2substitutions.keys():
         if len(lessons2substitutions[key]) > 1:
             flag = True
@@ -43,6 +47,9 @@ def replace_lessons(lessons, substitutions):
         _logger.critical("Конец программы.")
         sys.exit()
     
-    
+    for index_lesson in lessons2substitutions.keys():
+        substitution = substitutions[lessons2substitutions[index_lesson][0]]
+        for key in substitution["replace"].keys():
+            lessons.at[index_lesson, key] = substitution["replace"][key]
      
     return lessons
