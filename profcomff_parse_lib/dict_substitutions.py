@@ -52,8 +52,6 @@ dict_substitutions = {
     },
     "replace_lessons": [
         {
-         "requires": {"group": "107м", "weekday": 0, "num": 0}, 
-         "replace": {"subject": "Метод вторичного квантования"}
         }
     ]
 }
