@@ -12,5 +12,6 @@ def parse_all(lessons, dict_substitutions={}):
     lessons, teachers = parse_teacher(lessons)
     lessons = parse_subjects(lessons, dict_substitutions.get("parse_subjects", {}))
     lessons, subjects = pretty_subjects(lessons, dict_substitutions.get("pretty_subjects", {}))
+    print(lessons)
 
     return lessons, places, groups, teachers, subjects
