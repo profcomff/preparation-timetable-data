@@ -11,7 +11,7 @@ def _preprocessing(subject):
 
 
 def pretty_subjects(lessons, dict_substitutions):
-    """Превращает название пары в более менее нормальные. Дополнительно возвращает список предметов."""
+    """Превращает название пары в более менее нормальные."""
     _logger.info("Начинаю делать 'subject' красивыми...")
 
     subjects = lessons["subject"].tolist()
@@ -21,4 +21,4 @@ def pretty_subjects(lessons, dict_substitutions):
         subjects[i] = subject
 
     lessons["subject"] = subjects
-    return lessons, list(set(lessons["subject"].tolist()))
+    return lessons
