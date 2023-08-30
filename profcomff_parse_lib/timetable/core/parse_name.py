@@ -8,10 +8,7 @@ _logger = logging.getLogger(__name__)
 
 def _preprocessing(name):
     """По сути, исправление опечаток в названии пар."""
-    if name == "128мб - Специальный физический практикум Белов        А. А. Демин Д. С.":
-        return "128мб - Специальный физический практикум Белов А. А. Демин Д. С."
-
-    return name
+    return re.sub(r"\s+", " ", name)
 
 
 def _parse_name(name):
