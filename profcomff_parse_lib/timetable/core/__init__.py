@@ -5,7 +5,6 @@ from .parse_subjects import parse_subjects
 from .parse_teacher import parse_teacher
 from .parse_timetable import parse_timetable
 from .pretty_subjects import pretty_subjects
-from .replace_lessons import replace_lessons
 
 __all__ = ["parse_timetable", "parse_name", "parse_place", "parse_group",
-           "parse_teacher", "parse_subjects", "pretty_subjects", "replace_lessons"]
+           "parse_teacher", "parse_subjects", "pretty_subjects"]

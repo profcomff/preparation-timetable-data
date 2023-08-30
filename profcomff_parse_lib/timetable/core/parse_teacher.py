@@ -9,10 +9,12 @@ _logger = logging.getLogger(__name__)
 def parse_teacher(lessons):
     """
     Преобразует каждый элемент колонки 'teacher' в элементы вида ['Фамилия И. О.', ...].
+    Дополнительно возвращает список всех уникальных преподавателей.
     """
     _logger.info("Начинаю парсить 'teacher'...")
 
     teachers = []
+    unique_teachers = set()
     for index, row in lessons.iterrows():
         teacher = row["teacher"]
 
@@ -24,10 +26,11 @@ def parse_teacher(lessons):
                 result[i] = item[1] + " " + item[2] + " " + item[3]
 
             teacher = result
+            unique_teachers.update(set(teacher))
 
         if isinstance(teacher, list):
             teacher = tuple(teacher)
         teachers.append(teacher)
 
     lessons["teacher"] = teachers
-    return lessons
+    return lessons, list(unique_teachers)
