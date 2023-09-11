@@ -3,7 +3,23 @@ import re
 from profcomff_parse_lib.utilities.ndim_iterator import NDimIterator
 
 _logger = logging.getLogger(__name__)
-_unique_values_that_dont_have_regex = set() 
+
+
+def _preprocessing(subject):
+    """По сути, исправление опечаток в названии пар."""
+    if subject == "105М, 106М, 110М, 141М - 105МДМП, 106М, 141М, 110М с/к по выб ":
+        return "105М, 106М, 110М, 141М - 105М ДМП, 106М, 141М, 110М с/к по выб "
+
+    if subject == "137Мпо выбору, 237мб обяз. ДМП ":
+        return "137М по выбору, 237мб обяз. ДМП "
+
+    if subject == "201Мобяз, 207мб по выбору ДМП ":
+        return "201М обяз, 207мб по выбору ДМП "
+
+    if subject == "216Ма, 221М - 216мА ДМП,С/К по выбору 221м ":
+        return "216Ма, 221М, 216мА ДМП, 221м С/К по выбору"
+
+    return subject
 
 
 def _compare_groups(group1, group2):
@@ -22,19 +38,18 @@ def _compare_groups(group1, group2):
     return group1 == group2
 
 
-def _parse_subjects(group, subject, dict_substitutions={}):
+def _parse_subjects(group, subject, is_dash=False):
     """
     Парсит 'subjects' по заданным регулярным выражениям. Возвращает subject, если у группы есть такой предмет,
     в противном случае возвращает None.
     'Group' должно быть пропущено через '_post_processing'.
     В случае отсутствия подходящего регулярного выражения выдает предупреждение и возвращает сам 'subject'.
-    В 'dict_substitutions' указаны замены для названия предметов.
     """
     number_group = r"\d{3} {0,1}[А-Яа-яёЁ]{0,2}"
     name_subject = r"[А-Яа-яёЁA-Z ./\-]+"
     delimiter = r"[, .и+\-]*"
 
-    subject = dict_substitutions.get(subject, subject)
+    subject = _preprocessing(subject)
 
     # [307{value_i} - ...]{dim}
     for dim in range(3):
@@ -62,14 +77,15 @@ def _parse_subjects(group, subject, dict_substitutions={}):
                         for i in range(value):
                             # Delimiter.
                             current_index += 1
-                            # # Нужно учесть: 402 - 406 == 402, 403, 404, 405, 406
-                            # if result[current_index].strip().rstrip() == "-":
-                            #     # Если будет 102м - 103мб, то будет ошибка, поэтому кикаем это.
-                            #     if result[current_index-1].strip().rstrip().isdigit() \
-                            #             and result[current_index+1].strip().rstrip().isdigit():
-                            #         for sub_group in range(int(result[current_index-1])+1, int(result[current_index+1])):
-                            #             # Не берем первую (уже взяли) и последнюю (возьмем потом).
-                            #             current_groups.append(str(sub_group))
+                            if is_dash:
+                                # Нужно учесть: 402 - 406 == 402, 403, 404, 405, 406
+                                if result[current_index].strip().rstrip() == "-":
+                                    # Если будет 102м - 103мб, то будет ошибка, поэтому кикаем это.
+                                    if result[current_index-1].strip().rstrip().isdigit() \
+                                            and result[current_index+1].strip().rstrip().isdigit():
+                                        for sub_group in range(int(result[current_index-1])+1, int(result[current_index+1])):
+                                            # Не берем первую (уже взяли) и последнюю (возьмем потом).
+                                            current_groups.append(str(sub_group))
                             # Group.
                             current_index += 1
                             current_groups.append(result[current_index])
@@ -128,14 +144,12 @@ def _parse_subjects(group, subject, dict_substitutions={}):
             return result[1]
 
     _logger.warning(f"Для '{subject}' не найдено подходящее регулярное выражение.")
-    _unique_values_that_dont_have_regex.add(subject)
     return subject
 
 
-def parse_subjects(lessons, dict_substitutions):
+def parse_subjects(lessons):
     """
     Парсит колонку 'subject' и, если надо, удаляет строчку из таблицы (если в названии предметы указаны группы).
-    В 'dict_substitutions' указаны замены для названия предметов.
     """
     _logger.info("Начинаю парсить 'subjects'...")
 
@@ -144,13 +158,11 @@ def parse_subjects(lessons, dict_substitutions):
     for index, row in lessons.iterrows():
         subject = row["subject"]
 
-        subject = _parse_subjects(row["group"], subject, dict_substitutions)
+        subject = _parse_subjects(row["group"], subject)
         if subject is None:
             deleted_rows.append(index)
         else:
             subjects.append(subject)
-        
-    _logger.warning(f"Все уникальные 'subjects', для которых не найдено подходящее регулярное выражение: {_unique_values_that_dont_have_regex}")
 
     lessons.drop(deleted_rows, axis=0, inplace=True)
     lessons["subject"] = subjects

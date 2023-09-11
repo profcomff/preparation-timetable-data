@@ -1,20 +1,14 @@
 from .core import *
-from .flatten import flatten_to_list
 
 
-def parse_all(lessons, dict_substitutions={}):
+def parse_all(lessons):
     """
     Делает весь необходимый парсинг.
-
-    :param: dict_substitutions Смотрите код функции для понимания. 
     """
-    lessons = parse_place(lessons, dict_substitutions.get("parse_place", {}))
+    lessons, places = parse_place(lessons)
     lessons, groups = parse_group(lessons)
-    lessons = parse_teacher(lessons)
-    lessons = parse_subjects(lessons, dict_substitutions.get("parse_subjects", {}))
-    lessons = pretty_subjects(lessons, dict_substitutions.get("pretty_subjects", {}))
-    lessons = replace_lessons(lessons, dict_substitutions.get("replace_lessons", {}))
+    lessons, teachers = parse_teacher(lessons)
+    lessons = parse_subjects(lessons)
+    lessons, subjects = pretty_subjects(lessons)
 
-    return (lessons, list(set(lessons["place"].tolist())), groups, 
-            list(set(flatten_to_list(lessons["teacher"].tolist()))), 
-            list(set(lessons["subject"].tolist())))
+    return lessons, places, groups, teachers, subjects

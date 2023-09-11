@@ -2,7 +2,6 @@ from profcomff_parse_lib import *
 import pandas as pd
 import logging
 import requests as r
-from profcomff_parse_lib import dict_substitutions
 
 # [[курс, поток, количество групп], ...]
 SOURCES = [
@@ -35,8 +34,7 @@ for i, row in timetables.iterrows():
 
 # ---------------- Parsing ----------------
 lessons = parse_name(results)
-lessons, places, groups, teachers, subjects = parse_all(lessons, dict_substitutions.dict_substitutions)
-
+lessons, places, groups, teachers, subjects = parse_all(lessons)
 lessons = multiple_lessons(lessons)
 lessons = flatten(lessons)
 lessons = all_to_array(lessons)

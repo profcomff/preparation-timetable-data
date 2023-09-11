@@ -6,6 +6,11 @@ import pandas as pd
 _logger = logging.getLogger(__name__)
 
 
+def _preprocessing(name):
+    """По сути, исправление опечаток в названии пар."""
+    return re.sub(r"\s+", " ", name)
+
+
 def _parse_name(name):
     """
     Разделяет одно 'name' на 'subject', 'teacher' и 'place' по заданным регулярным выражениям.
@@ -14,6 +19,7 @@ def _parse_name(name):
     """
     parsed_name = {"subject": None, "teacher": None, "place": None}
 
+    name = _preprocessing(name)
 
     # '... <nobr>5-27</nobr> проф. Чиркин А. С.'
     result = re.match(r"([А-Яа-яёЁa-zA-Z +,/.\-\d]+)<nobr>([А-Яа-яёЁa-zA-Z +,/.\-\d]+)</nobr>" +
