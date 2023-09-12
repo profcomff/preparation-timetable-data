@@ -9,7 +9,7 @@ MODES_URL = enum.Enum("Modes", "get delete post patch")
 
 def get_url_room(mode_, base):
     if mode_ == MODES_URL.get:
-        return get_url(base) + "/timetable/room/?limit=1000&offset=0"
+        return get_url(base) + "/timetable/room/?limit=0&offset=0"
     if mode_ == MODES_URL.delete:
         return get_url(base) + '/timetable/room/'
     if mode_ == MODES_URL.post:
@@ -20,7 +20,7 @@ def get_url_room(mode_, base):
 
 def get_url_group(mode_, base):
     if mode_ == MODES_URL.get:
-        return get_url(base) + "/timetable/group/?limit=1000&offset=0"
+        return get_url(base) + "/timetable/group/?limit=0&offset=0"
     if mode_ == MODES_URL.delete:
         return get_url(base) + '/timetable/group/'
     if mode_ == MODES_URL.post:
@@ -31,7 +31,7 @@ def get_url_group(mode_, base):
 
 def get_url_lecturer(mode_, base):
     if mode_ == MODES_URL.get:
-        return get_url(base) + "/timetable/lecturer/?limit=1000&offset=0"
+        return get_url(base) + "/timetable/lecturer/?limit=0&offset=0"
     if mode_ == MODES_URL.delete:
         return get_url(base) + '/timetable/lecturer/'
     if mode_ == MODES_URL.post:
