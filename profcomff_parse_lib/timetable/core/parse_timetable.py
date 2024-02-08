@@ -31,7 +31,11 @@ class Group:
 
     def run(self) -> List[Dict[str, Any]]:
         body = self.data.select("body")[0]
-        rows = body.select("tr")[1]
+        try:
+            rows = body.select("tr")[1]
+        except IndexError:
+            rows = body.select("tr")[0]
+
         self.tags = list(filter(lambda x: x != "\n", rows.children))
 
         group = self.get_group()
@@ -42,7 +46,10 @@ class Group:
 
     def get_group(self) -> str:
         """Номер группы из заголовка страницы."""
-        return self.tags[1].text
+        try:
+            return self.tags[1].text
+        except IndexError:
+            return self.tags[0].text
 
     def get_lessons(self) -> List[Dict[str, Any]]:
         """Список предметов."""
