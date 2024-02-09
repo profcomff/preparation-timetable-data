@@ -34,7 +34,7 @@ class Group:
         try:
             rows = body.select("tr")[1]
         except IndexError:
-            rows = body.select("tr")[0]
+            return []
 
         self.tags = list(filter(lambda x: x != "\n", rows.children))
 
@@ -49,7 +49,7 @@ class Group:
         try:
             return self.tags[1].text
         except IndexError:
-            return self.tags[0].text
+            return ''
 
     def get_lessons(self) -> List[Dict[str, Any]]:
         """Список предметов."""
