@@ -5,8 +5,8 @@ with open("README.md", "r") as readme_file:
 
 setup(
     name="profcomff_parse_lib",
-    version="2023.09.13",
-    author="Sergey Zamyatin and Andrei Lukianov",
+    version="2024.02.08",
+    author="Sergey Zamyatin, Andrei Lukianov, Stanislav Roslavtsev",
     long_description=readme,
     long_description_content_type="text/markdown",
     url="https://github.com/preparation-timetable-data ",
