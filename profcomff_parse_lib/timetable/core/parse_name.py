@@ -87,12 +87,6 @@ def _parse_name(name):
             parsed_name["teacher"] = result[3]
             return parsed_name
 
-    result = re.match(r'^([-,+\s\d]+ - [ А-Яа-яёЁa-zA-Z()]+)', name)
-    if not (result is None):
-        if name == result[0]:
-            parsed_name["subject"] = result[1]
-            return parsed_name
-
     _logger.warning(f"Для '{name}' не найдено подходящее регулярное выражение.")
     return {"subject": name, "teacher": None, "place": None}
 

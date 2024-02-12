@@ -12,10 +12,10 @@ def _parse_group(group):
     В случае отсутствия подходящего регулярного выражения выдает предупреждение и возвращает '[(group, "")]'.
     """
     name_group = r"[А-Яа-яёЁ \.,\-:]"
-    number_group = r"\d{3} {0,1}[А-Яа-яёЁ]*"
+    number_group = r"\d{3}\w{0,2}"
 
     # '113 ...'
-    result = re.match(rf"(\d+) *([А-Яа-яёЁ: ]*)", group)
+    result = re.match(rf"(\d{3}\w{0,2}) *([А-Яа-яёЁ: ]*)", group)
     if not (result is None):
         if group == result[0]:
             return [(result[1], result[2])]
@@ -29,8 +29,8 @@ def _parse_group(group):
 
     # '{303 - ...}{n}'
     for i in range(6):
-        result = re.match(f"[А-Яа-яёЁ ]*({number_group}) *-* *({name_group}+)" +
-                          f" */* *({number_group}) *-* *({name_group}+)" * i, group)
+        result = re.match(f"[А-Яа-яёЁ ]*({number_group}) *-* *({name_group}*)" +
+                          f" */* *({number_group}) *-* *({name_group}*)" * i, group)
         if not (result is None):
             if group == result[0]:
                 return [(result[2 * _i + 1], result[2 * _i + 1 + 1]) for _i in range(i + 1)]
@@ -61,7 +61,6 @@ def parse_group(lessons):
             continue
 
         group = list(map(_post_processing, _parse_group(group)))
-
         unique_groups.update(set(group))
 
         # Добавляем в конец новую строку(-и), если групп оказалось несколько.
