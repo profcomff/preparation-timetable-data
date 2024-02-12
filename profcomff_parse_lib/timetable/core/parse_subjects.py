@@ -143,6 +143,21 @@ def _parse_subjects(group, subject, is_dash=False):
         if subject == result[0]:
             return result[1]
 
+    result = re.match(r'^([-,+\s\d]+ *-* *[ А-Яа-яёЁa-zA-Z()]+)', subject)
+    if not (result is None):
+        if subject == result[0]:
+            return result[1]
+
+    result = re.match(r'([\d,\s\-/ДС+б]*) *([ А-Яа-яёЁa-zA-Z()/]+) *', subject)
+    if not (result is None):
+        if subject == result[0]:
+            return result[2]
+
+    result = re.match(r'([\d,\s\-/ДС+б]*) *-* *([ А-Яа-яёЁa-zA-Z()]+) *', subject)
+    if not (result is None):
+        if subject == result[0]:
+            return result[2]
+
     _logger.warning(f"Для '{subject}' не найдено подходящее регулярное выражение.")
     return subject
 
