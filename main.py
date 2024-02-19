@@ -2,15 +2,17 @@ from profcomff_parse_lib import *
 import pandas as pd
 import logging
 import requests as r
+import warnings
 
+warnings.filterwarnings("ignore")
 # [[курс, поток, количество групп], ...]
 SOURCES = [
     [1, 1, 6], [1, 2, 6], [1, 3, 6],
     [2, 1, 6], [2, 2, 6], [2, 3, 6],
     [3, 1, 10], [3, 2, 8],
-    [4, 1, 10], [4, 2, 8],
-    [5, 1, 13], [5, 2, 12],
-    [6, 1, 13], [6, 2, 11]
+    [4, 1, 10], [4, 2, 10],
+    [5, 1, 13], [5, 2, 11],
+    [6, 1, 11], [6, 2, 10]
 ]
 
 USER_AGENT = "Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 " \
