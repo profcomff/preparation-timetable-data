@@ -2,9 +2,7 @@ from profcomff_parse_lib import *
 import pandas as pd
 import logging
 import requests as r
-import warnings
 
-warnings.filterwarnings("ignore")
 # [[курс, поток, количество групп], ...]
 SOURCES = [
     [1, 1, 6], [1, 2, 6], [1, 3, 6],
