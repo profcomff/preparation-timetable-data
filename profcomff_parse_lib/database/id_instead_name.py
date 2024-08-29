@@ -27,8 +27,11 @@ def room_to_id(lessons, headers, base):
                     b = True
                     break
             if not b:
-                _logger.critical("Ошибка, аудитория '{aud}' не найдена. Завершение работы".format(aud=row['place']))
-                sys.exit()
+                # @mixx3 мы согласны на потери данных в таком случае
+                # _logger.critical("Ошибка, аудитория '{aud}' не найдена. Завершение работы".format(aud=row['place']))
+                # sys.exit()
+                _logger.info("Ошибка, аудитория '{aud}' не найдена. ".format(aud=row['place']))
+                place[i][k] = -100  # чтобы не было ошибок в связях
     lessons["place"] = place
     return lessons
 
@@ -52,8 +55,11 @@ def group_to_id(lessons, headers, base):
                     b = True
                     break
             if not b:
-                _logger.critical("Ошибка, группа '{group}' не найдена. Завершение работы".format(group=row["group"][j]))
-                sys.exit()
+                # @mixx3 мы согласны на потери данных в таком случае
+                # _logger.critical("Ошибка, группа '{group}' не найдена. Завершение работы".format(group=row["group"][j]))
+                # sys.exit()
+                _logger.info("Ошибка, группа '{group}' не найдена.".format(group=row["group"][j]))
+                new_groups[i][j] = -100  # чтобы не было ошибок в связях
     lessons["group"] = new_groups
 
     return lessons
@@ -82,8 +88,11 @@ def teacher_to_id(lessons, headers, base):
                     new_teacher[i][j] = teacher["id"]
                     break
             if not b:
-                _logger.critical("Ошибка, преподаватель '{prep}' не найден. Завершение работы".format(prep=item_))
-                sys.exit()
+                # @mixx3 мы согласны на потери данных в таком случае
+                # _logger.critical("Ошибка, преподаватель '{prep}' не найден. Завершение работы".format(prep=item_))
+                # sys.exit()
+                _logger.info("Ошибка, преподаватель '{prep}' не найден.".format(prep=item_))
+                new_teacher[i][j] = -100  # чтобы не было ошибок в связях
     lessons["teacher"] = new_teacher
 
     return lessons
