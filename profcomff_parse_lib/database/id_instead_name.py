@@ -58,7 +58,7 @@ def group_to_id(lessons, headers, base):
                 body = {"name": f"Группа # {row['group'][j]}", 'number': row['group'][j]}
                 response = requests.request(urls_api.get_url_group(urls_api.MODES_URL.post, base), headers=headers, json=body)
                 new_groups[i][j] = response.json()["id"]
-                logging.info(f'Новая группа: {response}')
+                _logger.info(f'Новая группа: {response}')
     lessons["group"] = new_groups
 
     return lessons
@@ -92,7 +92,7 @@ def teacher_to_id(lessons, headers, base):
                 response = requests.request(urls_api.get_url_lecturer(urls_api.MODES_URL.post, base), headers=headers,
                                             json=body)
                 new_teacher[i][j] = response.json()["id"]
-                logging.info(f'Новый преподаватель: {response}')
+                _logger.info(f'Новый преподаватель: {response}')
     lessons["teacher"] = new_teacher
 
     return lessons
