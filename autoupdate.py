@@ -112,7 +112,7 @@ for i, row in lessons_for_deleting.iterrows():
     for id in row["events_id"]:
         if check_date(id, "test", begin):
             delete_lesson(headers, id, "test")
-lessons_new = calc_date(lessons_for_creating, begin, end, "02/07/2024")
+lessons_new = calc_date(lessons_for_creating, begin, end, "09/02/2024")
 a = 1
 for i, row in lessons_new.iterrows():
     new_id = row["id"]
