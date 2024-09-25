@@ -55,11 +55,10 @@ def group_to_id(lessons, headers, base):
                     b = True
                     break
             if not b:
-                # @mixx3 мы согласны на потери данных в таком случае
-                # _logger.critical("Ошибка, группа '{group}' не найдена. Завершение работы".format(group=row["group"][j]))
-                # sys.exit()
-                _logger.info("Ошибка, группа '{group}' не найдена.".format(group=row["group"][j]))
-                new_groups[i][j] = -100  # чтобы не было ошибок в связях
+                body = {"name": f"Группа # {row['group'][j]}", 'number': row['group'][j]}
+                response = requests.request(urls_api.get_url_group(urls_api.MODES_URL.post, base), headers=headers, json=body)
+                new_groups[i][j] = response.json()["id"]
+                logging.info(f'Новая группа: {response}')
     lessons["group"] = new_groups
 
     return lessons
@@ -88,11 +87,12 @@ def teacher_to_id(lessons, headers, base):
                     new_teacher[i][j] = teacher["id"]
                     break
             if not b:
-                # @mixx3 мы согласны на потери данных в таком случае
-                # _logger.critical("Ошибка, преподаватель '{prep}' не найден. Завершение работы".format(prep=item_))
-                # sys.exit()
-                _logger.info("Ошибка, преподаватель '{prep}' не найден.".format(prep=item_))
-                new_teacher[i][j] = -100  # чтобы не было ошибок в связях
+                item = item_.split()
+                body = {"first_name": item[1][0], "middle_name": item[2][0], "last_name": item[0], "description": "Преподаватель физического факультета" }
+                response = requests.request(urls_api.get_url_lecturer(urls_api.MODES_URL.post, base), headers=headers,
+                                            json=body)
+                new_teacher[i][j] = response.json()["id"]
+                logging.info(f'Новый преподаватель: {response}')
     lessons["teacher"] = new_teacher
 
     return lessons
