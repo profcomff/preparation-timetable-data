@@ -34,7 +34,12 @@ def _compare_groups(group1, group2):
         # Этот if не сработает, если на конце группы есть две буквы.
         if result[0] == group2:
             return group1 in group2
-
+    master_specialist_pattern_1_5 = r"(([1]\d\d[м])|([5]\d\d))"
+    if (re.match(master_specialist_pattern_1_5, group1) is not None) and (re.match(master_specialist_pattern_1_5, group2) is not None):
+        return group1[1:3] == group2[1:3]
+    master_specialist_pattern_2_6 = r"(([2]\d\d[м])|([6]\d\d))"
+    if (re.match(master_specialist_pattern_2_6, group1) is not None) and (re.match(master_specialist_pattern_2_6, group2) is not None):
+        return group1[1:3] == group2[1:3]
     return group1 == group2
 
 

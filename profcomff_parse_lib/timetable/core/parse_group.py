@@ -13,13 +13,23 @@ def _parse_group(group):
     """
     name_group = r"[А-Яа-яёЁ \.,\-:]"
     number_group = r"\d{3}\w{0,2}"
-
+    # # заменяем 1xxmA на 5xxA
+    result = re.findall(r"([1]\d\d[м]([А-Яа-яёЁ:]|))", group)
+    if result is not None:
+        for string in result:
+            letter = string[-1]
+            group = group.replace(string[0], f'5{string[0][1:3]}{letter}')
+    # заменяем 6xxA на 2xxмA
+    result = re.findall(r"([6]\d\d([А-Яа-яёЁ:]|))", group)
+    if result is not None:
+        for string in result:
+            letter = string[-1]
+            group = group.replace(string[0], f'2{string[0][1:3]}м{letter}')
     # '113 ...'
     result = re.match(rf"(\d{3}\w{0,2}) *([А-Яа-яёЁ: ]*)", group)
     if not (result is None):
         if group == result[0]:
             return [(result[1], result[2])]
-
     # '303{n} - ...'
     for i in range(3):
         result = re.match(f"({number_group})" + f" *, *({number_group})" * i + f" *- *({name_group}+)", group)

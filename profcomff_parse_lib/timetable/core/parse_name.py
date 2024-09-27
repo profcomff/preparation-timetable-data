@@ -20,6 +20,15 @@ def _parse_name(name):
     parsed_name = {"subject": None, "teacher": None, "place": None}
 
     name = _preprocessing(name)
+    result = re.match(
+        r"([А-Яа-яёЁa-zA-Z +,/.\-\d]+) (Каф.|[А-Яа-яёЁa-zA-Z +/,\-\d]+) (|доц. |асс. |проф. |ст. н. с. |н. с. )([А-Яа-яёЁa-zA-Z]+ [А-Яа-яёЁa-zA-Z]\. [А-Яа-яёЁa-zA-Z]\.)",
+        name)
+    if not (result is None):
+        if name == result[0]:
+            parsed_name["subject"] = result[1]
+            parsed_name["place"] = result[2]
+            parsed_name["teacher"] = result[4]
+            return parsed_name
 
     # '... <nobr>5-27</nobr> проф. Чиркин А. С.'
     result = re.match(r"([А-Яа-яёЁa-zA-Z +,/.\-\d]+)<nobr>([А-Яа-яёЁa-zA-Z +,/.\-\d]+)</nobr>" +
@@ -86,6 +95,8 @@ def _parse_name(name):
             parsed_name["place"] = result[2]
             parsed_name["teacher"] = result[3]
             return parsed_name
+
+
 
     _logger.warning(f"Для '{name}' не найдено подходящее регулярное выражение.")
     return {"subject": name, "teacher": None, "place": None}
