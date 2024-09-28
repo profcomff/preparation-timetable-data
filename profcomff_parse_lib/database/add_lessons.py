@@ -30,6 +30,10 @@ def post_event(headers, event, base):
     r = requests.post(url, json=event, headers=headers).json()
     return r["id"]
 
+def post_events(headers, events):
+    r = requests.post("https://api.test.profcomff.com/event/bulk", json=events, headers=headers).json()
+    return len(r)
+
 
 def check_date(event_id, base, begin):
     url = urls_api.get_url_event(urls_api.MODES_URL.get, base)

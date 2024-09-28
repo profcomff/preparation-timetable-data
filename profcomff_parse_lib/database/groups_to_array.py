@@ -29,7 +29,7 @@ def part_to_array(lessons):
             b = lessons[i].drop(labels=["group"])
             boo = True
             for l in range(len(a)):
-                if a[l] != b[l]:
+                if a.iloc[l] != b.iloc[l]:
                     boo = False
                     break
             if boo:

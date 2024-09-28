@@ -1,3 +1,7 @@
+import time
+
+import requests
+
 from profcomff_parse_lib import *
 import pandas as pd
 import sqlalchemy as sa
@@ -5,6 +9,8 @@ from dotenv import load_dotenv
 import os
 from sqlalchemy.dialects import postgresql
 import datetime
+
+from profcomff_parse_lib.database.add_lessons import post_events
 
 load_dotenv()
 host = os.getenv("host")
@@ -15,9 +21,9 @@ password = os.getenv("password")
 token = os.getenv("token")
 headers = {"Authorization": f"{token}"}
 
-schema = "STG_TIMETABLE"
+schema = "public"
 table = "raw_html"
-engine = sa.create_engine(f"postgresql://{database}:{user}@{host}/{password}")
+engine = sa.create_engine(f"postgresql://{user}:{password}@{host}/{database}")
 timetables = pd.read_sql_query(f'select * from "{schema}".{table}', engine)
 
 results = pd.DataFrame()
@@ -30,10 +36,10 @@ lessons = manual_edit(lessons)
 lessons = multiple_lessons(lessons)
 lessons = flatten(lessons)
 lessons = all_to_array(lessons)
-completion(groups, places, teachers, headers, "test")
+completion(groups, places, teachers, headers, "prod")
 
 
-lessons = to_id(lessons, headers, "test")
+lessons = to_id(lessons, headers, "prod")
 conn = engine.connect()
 conn.execute(sa.text(f"""
 CREATE TABLE IF NOT EXISTS "{schema}".new(
@@ -104,28 +110,39 @@ conn.commit()
 lessons_for_deleting = pd.read_sql_query(f"""select events_id from "{schema}".diff where action='delete'""", engine)
 lessons_for_creating = pd.read_sql_query(f"""select id, subject, "start", "end", "group", teacher, place, odd, even, weekday, num from "{schema}".diff where action='create'""", engine)
 
-begin = datetime.datetime.now()
-end = datetime.datetime.now() + datetime.timedelta(days=1)
+begin = datetime.datetime(year=2024, month=9, day=1)
+end = datetime.datetime(year=2024, month=12, day=30)
 begin = begin.strftime("%m/%d/%Y")
 end = end.strftime("%m/%d/%Y")
 for i, row in lessons_for_deleting.iterrows():
     for id in row["events_id"]:
-        if check_date(id, "test", begin):
-            delete_lesson(headers, id, "test")
-lessons_new = calc_date(lessons_for_creating, begin, end, "09/02/2024")
+        if check_date(id, "prod", begin):
+            delete_lesson(headers, id, "prod")
+lessons_new = calc_date(lessons_for_creating, begin, end, "09/01/2024")
 a = 1
-for i, row in lessons_new.iterrows():
-    new_id = row["id"]
-    event_id = post_event(headers, row, "test")
-    query = f"""UPDATE "{schema}".new set events_id = events_id || array[{event_id}] WHERE id={new_id}"""
-    conn.execute(sa.text(query))
-conn.commit()
-query = f"""
-UPDATE "{schema}"."new" as ch
-SET events_id = ch.events_id || selected.events_id
-FROM
-(SELECT id, events_id, "action" from "{schema}".diff) AS Selected
-WHERE ch.id  = Selected.id and selected."action" = 'remember';
-"""
-conn.execute(sa.text(query))
-conn.commit()
+events = []
+for i, event in lessons_new.iterrows():
+    new_id = event["id"]
+    events.append({
+        "name": event['subject'],
+        "room_id": event['place'],
+        "group_id": event['group'],
+        "lecturer_id": event['teacher'],
+        "start_ts": event['start'],
+        "end_ts": event['end']
+    })
+print(len(events))
+batches = [events[i:i + 100] for i in range(0, len(events), 100)]
+batches_error = []
+for num, batch in enumerate(batches):
+    resp = requests.post("https://api.profcomff.com/timetable/event/bulk", json=batch, headers=headers)
+    if int(resp.status_code) == 502:
+        batches_error.append(batch)
+    print(f"{num+1}/{len(batches)} -- {resp}")
+    time.sleep(0.1)
+
+for num, batch in enumerate(batches_error):
+    resp = requests.post("https://api.profcomff.com/timetable/event/bulk", json=batch, headers=headers)
+    print(f"error-bacthes: {num+1}/{len(batches)} -- {resp}")
+    time.sleep(0.1)
+

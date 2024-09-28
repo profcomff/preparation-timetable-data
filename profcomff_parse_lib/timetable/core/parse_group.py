@@ -23,8 +23,7 @@ def _parse_group(group):
     result = re.findall(r"([6]\d\d([А-Яа-яёЁ:]|))", group)
     if result is not None:
         for string in result:
-            letter = string[-1]
-            group = group.replace(string[0], f'2{string[0][1:3]}м{letter}')
+            group = f'2{string[0][1:3]}м'
     # '113 ...'
     result = re.match(rf"(\d{3}\w{0,2}) *([А-Яа-яёЁ: ]*)", group)
     if not (result is None):

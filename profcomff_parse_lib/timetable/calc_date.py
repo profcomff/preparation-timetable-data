@@ -21,8 +21,7 @@ def calc_date(lessons, semester_begin, semester_end, semester_start):
     lessons_new = []
     i_begin = max(0, -day_number1)
     for i in range(i_begin, day_number):
-        num = ((i + start.weekday() + day_number1) // 7) % 2
-        print(num)
+        num = ((i + start.weekday() + day_number1 + 1) // 7) % 2
         for j, row in lessons.iterrows():
             if (num == 1 and row['odd']) or (num == 0 and row['even']):
                 row_new = row

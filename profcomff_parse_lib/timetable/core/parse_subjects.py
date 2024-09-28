@@ -27,19 +27,21 @@ def _compare_groups(group1, group2):
     # Group1 уже прошел через _post_processing.
     group2 = group2.replace(" ", "")
     group2 = group2.lower()
-
+    master_specialist_pattern_1_5 = r"(([1]\d\d[м])|([5]\d\d))"
+    if (re.match(master_specialist_pattern_1_5, group1) is not None) and (
+            re.match(master_specialist_pattern_1_5, group2) is not None):
+        return group1[1:3] == group2[1:3]
+    master_specialist_pattern_2_6 = r"(([2]\d\d[м])|([6]\d\d))"
+    if (re.match(master_specialist_pattern_2_6, group1) is not None) and (
+            re.match(master_specialist_pattern_2_6, group2) is not None):
+        return group1[1:3] == group2[1:3]
     # Возможна ситуация названия пары 307а - ... у 307 группы (3 курс).
     result = re.match(r"\d{3}\D", group2)
     if result is not None:
         # Этот if не сработает, если на конце группы есть две буквы.
         if result[0] == group2:
             return group1 in group2
-    master_specialist_pattern_1_5 = r"(([1]\d\d[м])|([5]\d\d))"
-    if (re.match(master_specialist_pattern_1_5, group1) is not None) and (re.match(master_specialist_pattern_1_5, group2) is not None):
-        return group1[1:3] == group2[1:3]
-    master_specialist_pattern_2_6 = r"(([2]\d\d[м])|([6]\d\d))"
-    if (re.match(master_specialist_pattern_2_6, group1) is not None) and (re.match(master_specialist_pattern_2_6, group2) is not None):
-        return group1[1:3] == group2[1:3]
+
     return group1 == group2
 
 
@@ -197,4 +199,4 @@ if __name__ == "__main__":
     parser.add_argument("group")
     parser.add_argument("subject")
     args = parser.parse_args()
-    print(_parse_subjects(args.group, args.subject))
+
