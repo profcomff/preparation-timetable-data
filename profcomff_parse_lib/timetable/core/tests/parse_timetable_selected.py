@@ -198,6 +198,16 @@ def parse_timetable(html):
     results = pd.DataFrame()
     results = pd.concat([results, pd.DataFrame(run(html))])
     selected_results = pd.DataFrame(results, columns =  ['name', 'group', 'weekday', 'start', 'end'])
-    selected_results.to_csv('C:/Users/Kotleta/Documents/NEW_Timetable_data.csv', index = False)
-    return selected_results
+    file = selected_results.to_sql(
+        'timetable_selected',
+        Connection
+            .get_connection_from_secrets('postgres_dwh')
+            .get_uri()
+            .replace("postgres://", "postgresql://")
+            .replace("?__extra__=%7B%7D", ""),
+        schema='STG_RASPHYSMSU',
+        if_exists='replace',
+        index=False,
+        )
+    return file
 
