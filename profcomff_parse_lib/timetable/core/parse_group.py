@@ -43,7 +43,15 @@ def _parse_group(group):
         if not (result is None):
             if group == result[0]:
                 return [(result[2 * _i + 1], result[2 * _i + 1 + 1]) for _i in range(i + 1)]
-
+                
+    # xxx-.../xxx -..., короче пробелы не там стоят 
+    result = re.match(rf"({number_group}(?: *м)?) *-.*", group)
+    if not (result is None):
+        if group == result[0]:
+            # извлекаем все номера из всей строки
+            numbers = re.findall(rf"({number_group}(?: *м)?) *-", group)
+            return [(num, "") for num in numbers]
+    
     _logger.warning(f"Для '{group}' не найдено подходящее регулярное выражение.")
     return [(group, "")]
 
