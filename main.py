@@ -2,6 +2,8 @@ from profcomff_parse_lib import *
 import pandas as pd
 import logging
 import requests as r
+import os, sqlalchemy as sa
+from dotenv import load_dotenv
 
 # [[курс, поток, количество групп], ...]
 SOURCES = [
@@ -28,13 +30,8 @@ for ind, source in enumerate(SOURCES):
             'raw_html': response.text,
         })
 timetables = pd.DataFrame(data)
-results = pd.DataFrame()
-for i, row in timetables.iterrows():
-    results = pd.concat([results, parse_timetable(row["raw_html"])])
-
-# ---------------- Parsing ----------------
-lessons = parse_name(results)
-lessons, places, groups, teachers, subjects = parse_all(lessons)
-lessons = multiple_lessons(lessons)
-lessons = flatten(lessons)
-lessons = all_to_array(lessons)
+load_dotenv()
+engine = sa.create_engine(
+    f"postgresql://{os.getenv('user')}:{os.getenv('password')}@{os.getenv('host')}/{os.getenv('database')}"
+)
+timetables.to_sql("raw_html", engine, schema="public", if_exists="replace", index=False)
