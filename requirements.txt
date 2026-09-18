@@ -1,0 +1,4 @@
+requests
+pandas<3
+beautifulsoup4
+retrying

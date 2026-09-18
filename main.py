@@ -2,15 +2,17 @@ from profcomff_parse_lib import *
 import pandas as pd
 import logging
 import requests as r
+import os, sqlalchemy as sa
+from dotenv import load_dotenv
 
 # [[курс, поток, количество групп], ...]
 SOURCES = [
-    [1, 1, 6], [1, 2, 6], [1, 3, 6],
-    [2, 1, 6], [2, 2, 6], [2, 3, 6],
+    [1, 1, 9], [1, 2, 9],
+    [2, 1, 9], [2, 2, 9],
     [3, 1, 10], [3, 2, 8],
-    [4, 1, 10], [4, 2, 10],
-    [5, 1, 13], [5, 2, 11],
-    [6, 1, 11], [6, 2, 10]
+    [4, 1, 10], [4, 2, 8],
+    [5, 1, 12], [5, 2, 11],
+    [6, 1, 13], [6, 2, 10]
 ]
 
 USER_AGENT = "Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 " \
@@ -28,13 +30,8 @@ for ind, source in enumerate(SOURCES):
             'raw_html': response.text,
         })
 timetables = pd.DataFrame(data)
-results = pd.DataFrame()
-for i, row in timetables.iterrows():
-    results = pd.concat([results, parse_timetable(row["raw_html"])])
-
-# ---------------- Parsing ----------------
-lessons = parse_name(results)
-lessons, places, groups, teachers, subjects = parse_all(lessons)
-lessons = multiple_lessons(lessons)
-lessons = flatten(lessons)
-lessons = all_to_array(lessons)
+load_dotenv()
+engine = sa.create_engine(
+    f"postgresql://{os.getenv('user')}:{os.getenv('password')}@{os.getenv('host')}/{os.getenv('database')}"
+)
+timetables.to_sql("raw_html", engine, schema="public", if_exists="replace", index=False)
