@@ -165,6 +165,9 @@ def _parse_subjects(group, subject, is_dash=False):
         if subject == result[0]:
             return result[2]
 
+    if subject.strip() == "Мега-установки и 4D-физика материалов (Дисциплина по выбору)":
+        return "Мега-установки и 4D-физика материалов (Дисциплина по выбору)"
+
     _logger.warning(f"Для '{subject}' не найдено подходящее регулярное выражение.")
     return subject
 

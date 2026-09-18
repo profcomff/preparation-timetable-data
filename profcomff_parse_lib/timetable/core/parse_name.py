@@ -96,7 +96,21 @@ def _parse_name(name):
             parsed_name["teacher"] = result[3]
             return parsed_name
 
-
+    # Ручные исключения: строки, которые не берёт ни одна регулярка.
+    SPECIAL_CASES = {
+        "Мега-установки и 4D-физика материалов (Дисциплина по выбору)": {
+            "subject": "Мега-установки и 4D-физика материалов (Дисциплина по выбору)",
+            "teacher": "Орешко А. П.",
+            "place": "СФА",
+        },
+        "422 - ЛАБОРАТОРИЯ СПЕЦИАЛИЗАЦИИ проф. Биленко И. А. ст. преп. Косых Т. Б.": {
+            "subject": "ЛАБОРАТОРИЯ СПЕЦИАЛИЗАЦИИ",
+            "teacher": "Биленко И. А.",
+            "place": None,
+        },
+    }
+    if name.strip() in SPECIAL_CASES:
+        return dict(SPECIAL_CASES[name.strip()])
 
     _logger.warning(f"Для '{name}' не найдено подходящее регулярное выражение.")
     return {"subject": name, "teacher": None, "place": None}

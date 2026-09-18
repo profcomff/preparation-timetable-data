@@ -36,10 +36,10 @@ lessons, places, groups, teachers, subjects = parse_all(lessons)
 lessons = multiple_lessons(lessons)
 lessons = flatten(lessons)
 lessons = all_to_array(lessons)
-completion(groups, places, teachers, headers, "test")
+completion(groups, places, teachers, headers, "prod")#
 
 
-lessons = to_id(lessons, headers, "test")
+lessons = to_id(lessons, headers, "prod")#
 conn = engine.connect()
 conn.execute(sa.text(f"""
 CREATE TABLE IF NOT EXISTS "{schema}".new(
@@ -116,9 +116,9 @@ begin = begin.strftime("%m/%d/%Y")
 end = end.strftime("%m/%d/%Y")
 for i, row in lessons_for_deleting.iterrows():
     for id in row["events_id"]:
-        if check_date(id, "test", begin):
-            delete_lesson(headers, id, "test")
-lessons_new = calc_date(lessons_for_creating, begin, end, "09/01/2026")
+        if check_date(id, "prod", begin):#
+            delete_lesson(headers, id, "prod")#
+lessons_new = calc_date(lessons_for_creating, begin, end, "08/25/2026")
 a = 1
 events = []
 for i, event in lessons_new.iterrows():
@@ -135,14 +135,17 @@ print(len(events))
 batches = [events[i:i + 100] for i in range(0, len(events), 100)]
 batches_error = []
 for num, batch in enumerate(batches):
-    resp = requests.post("https://api.test.profcomff.com/timetable/event/bulk", json=batch, headers=headers)
+    resp = requests.post("https://api.profcomff.com/timetable/event/bulk", json=batch, headers=headers)#
     if int(resp.status_code) == 502:
         batches_error.append(batch)
     print(f"{num+1}/{len(batches)} -- {resp}")
     time.sleep(0.1)
 
 for num, batch in enumerate(batches_error):
-    resp = requests.post("https://api.test.profcomff.com/timetable/event/bulk", json=batch, headers=headers)
+    resp = requests.post("https://api.profcomff.com/timetable/event/bulk", json=batch, headers=headers)#
     print(f"error-bacthes: {num+1}/{len(batches)} -- {resp}")
     time.sleep(0.1)
 
+
+#DELETE FROM api_timetable.events_rooms WHERE event_id IN (SELECT id FROM api_timetable.event WHERE start_ts >= '2026-09-01' AND start_ts < '2026-12-31');
+#UPDATE api_timetable.event SET is_deleted = true WHERE start_ts >= '2026-09-01' AND start_ts < '2026-12-31';
